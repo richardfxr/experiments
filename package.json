@@ -22,6 +22,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"globe.gl": "^2.27.1",
 		"three": "^0.150.1"
 	}
 }
