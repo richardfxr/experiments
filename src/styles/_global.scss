@@ -1,0 +1,22 @@
+// Partial SCSS file containing global CSS styles
+
+// === USE ====================================
+// @use 'variables' as *;
+
+/* ============================================
+GLOBAL
+============================================ */
+.visuallyHidden {
+	position: absolute;
+	white-space: nowrap;
+	clip: rect(0 0 0 0);
+
+   width: 1px;
+	height: 1px;
+
+   padding: 0;
+   border: 0;
+   margin: 0;
+
+	overflow: hidden;
+}
