@@ -3,8 +3,8 @@ import { browser } from '$app/environment';
 import { writable, get, type Writable } from 'svelte/store';
 import type { GlobeInstance } from 'globe.gl';
 
-/* === INTERFACES ========================= */
-export interface Country {
+/* === TYPES ============================== */
+export type Country = {
     id: string,
     totalPopulation: number
 };
@@ -20,3 +20,4 @@ export const UGNlistHoverCountry: Writable<Country | null> = writable(null);
 export const UGNsexSelection = writable([0]);
 export const UGNageSelection = writable([0, 1, 2]);
 export const UGNverticalLayout = writable(false);
+export const UGNaltOffset = writable(0);

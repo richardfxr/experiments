@@ -7,9 +7,8 @@
         UGNcountryInfo,
         UGNpopulationData,
         UGNcurTimeIndex,
-        UGNglobeHoverCountry,
-        UGNlistHoverCountry,
-        UGNcurCountries
+        UGNcurCountries,
+        UGNaltOffset
     } from '../../../store/store';
     import { Uganda } from '../data.js';
     import DateSelector from '$lib/UGN-dateSelector.svelte';
@@ -59,10 +58,17 @@
 
     /* === LIFECYCLE ========================== */
     onMount(() => {
-        // aim camera slightly above mid point between selected country and Uganda
-        if ($UGNglobe) $UGNglobe.pointOfView({
-            lat: (Uganda.lat + $UGNcountryInfo[slug].lat) / 2 + 19,
-            lng: (Uganda.lng + $UGNcountryInfo[slug].lng) / 2
+        const lat = (Uganda.lat + $UGNcountryInfo[slug].lat) / 2;
+        const lng = (Uganda.lng + $UGNcountryInfo[slug].lng) / 2;
+        const altitude = Math.min(Math.max(Math.abs(((Uganda.lat - lat) + (Uganda.lng - lng))) / 10, 0.5), 1.8);
+        console.log("altitude: " + altitude);
+
+        // update point of view
+        if ($UGNglobe)
+            $UGNglobe.pointOfView({
+            lat,
+            lng,
+            altitude
         }, 700);
     });
 </script>

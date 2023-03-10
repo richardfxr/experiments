@@ -10,8 +10,9 @@
         UGNlistHoverCountry,
         UGNcurCountries,
         UGNsexSelection,
-        UGNageSelection
-    } from '../../store/store';
+        UGNageSelection,
+        UGNaltOffset
+        } from '../../store/store';
     import { Uganda } from './data.js';
     import Checkboxes from '$lib/UGN-checkboxes.svelte';
     import Search from '$lib/SVGs/UGN-search.svelte';
@@ -68,10 +69,12 @@
 
     /* === LIFECYCLE ========================== */
     onMount(() => {
-        // aim camera slightly above Uganda
-        if ($UGNglobe) $UGNglobe.pointOfView({
-            lat: Uganda.lat + 19,
-            lng: Uganda.lng
+        // update point of view
+        if ($UGNglobe)
+            $UGNglobe.pointOfView({
+            lat: Uganda.lat + 10,
+            lng: Uganda.lng,
+            altitude: 1.8 + $UGNaltOffset
         }, 700);
     });
 </script>

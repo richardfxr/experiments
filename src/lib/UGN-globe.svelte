@@ -6,7 +6,7 @@
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { UGNglobe } from '../store/store';
-    import { UGNcountryInfo } from '../store/store.js';
+    import { UGNcountryInfo, UGNaltOffset } from '../store/store.js';
     import type { Country } from '../store/store.js';    
     import countries from '$lib/globe-countries.json';
     import { Uganda } from '../routes/uganglobe/data.js';
@@ -81,11 +81,9 @@
             .onArcClick((country: any) => goto(`/uganglobe/${country.id}`))
         (globeViz);
 
-        // zoom in and out if neccessary
-        if (globeContainer.offsetWidth <= globeContainer.offsetHeight) {
-            console.log("portrait");
-            $UGNglobe.pointOfView({altitude: 3});
-        }
+        // set zoom based on aspect ratio
+        if (globeContainer.offsetWidth <= globeContainer.offsetHeight)
+            $UGNaltOffset = 0.6;
 	});
 </script>
 
