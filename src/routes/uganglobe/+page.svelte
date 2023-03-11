@@ -91,7 +91,7 @@
     class="searchForm"
     on:submit|preventDefault={() => {
         searchInput.blur();
-        countriesList.scrollIntoView({ behavior: "auto" });
+        setTimeout(() => countriesList.scrollIntoView(true), 50);
     }}>
     <div class="searchBar">
         <Search />
