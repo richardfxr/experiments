@@ -213,6 +213,8 @@
             flex-flow: column nowrap;
             align-items: center;
             justify-content: stretch;
+
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         :global {
@@ -220,7 +222,7 @@
                 position: fixed;
                 top: unset;
                 left: unset;
-                bottom: var(--_pad-xl);
+                bottom: calc(var(--_pad-xl) + env(safe-area-inset-bottom));
                 z-index: 100;
                 color: var(--_clr-150);
 
@@ -252,7 +254,7 @@
             }
 
             .halfWay .skip{
-                transform: translateY(calc(var(--_pad-xl) + 2 * var(--_pad-xl) + 15px));
+                transform: translateY(calc(var(--_pad-xl) + 2 * var(--_pad-xl) + 15px + env(safe-area-inset-bottom)));
             }
         }
 
