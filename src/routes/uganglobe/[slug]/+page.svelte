@@ -60,8 +60,7 @@
     onMount(() => {
         const lat = (Uganda.lat + $UGNcountryInfo[slug].lat) / 2;
         const lng = (Uganda.lng + $UGNcountryInfo[slug].lng) / 2;
-        const altitude = Math.min(Math.max(Math.abs(((Uganda.lat - lat) + (Uganda.lng - lng))) / 10, 0.5), 1.8);
-        console.log("altitude: " + altitude);
+        const altitude = Math.min(Math.max((Math.abs((Uganda.lat - lat)) + Math.abs((Uganda.lng - lng))) / 15, 0.5), 1.8);
 
         // update point of view
         if ($UGNglobe)
