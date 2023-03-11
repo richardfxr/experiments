@@ -104,6 +104,8 @@
             --_pad-xs: 4px;
             --_border-radius-md: 7px;
             --_border-radius-sm: 5px;
+            --_focus-outline-width: 3px;
+            --_focus-outline: solid var(--_focus-outline-width) var(--_clr-accent-700);
 
             --_font-2xl: 3rem;
             --_font-lg: 1.2rem;
@@ -174,6 +176,11 @@
                 background-color: var(--_clr-950);
             }
 
+            &:focus-visible {
+                color: var(--_clr-0);
+                background-color: var(--_clr-accent-700);
+            }
+
             &:active {
                 transform: translateY(0px);
                 color: var(--_clr-0);
@@ -203,6 +210,20 @@
 
         a {
             text-decoration: underline;
+
+            transition: color var(--_trans-fast);
+
+            &:hover, &:focus {
+                color: var(--_clr-900);
+            }
+
+            &:focus-visible {
+                outline: var(--_focus-outline);
+            }
+
+            &:active {
+                color: var(--_clr-1000);
+            }
         }
 
         .version {

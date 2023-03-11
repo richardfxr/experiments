@@ -196,18 +196,20 @@
             
             &:focus-within {
                 color: var(--_clr-1000);
+                border-radius: var(--_border-radius-md);
+                outline-offset: calc(-1 * var(--_focus-outline-width));
+                outline: var(--_focus-outline);
             }
 
             :global(#search.icon) {
                 min-width: 18px;
                 width: 18px;
-                margin-right: var(--_pad-md);
                 margin-left: var(--_pad-2xl);
             }
 
             input {
                 flex-grow: 1;
-                padding: var(--_pad-md) 0;
+                padding: var(--_pad-md) 0 var(--_pad-md) var(--_pad-md);
 
                 &::-webkit-search-cancel-button {
                     -webkit-appearance: none;
@@ -230,9 +232,14 @@
                     width: 15px;
                 }
 
-                &:hover {
+                &:hover, &:focus {
                     color: var(--_clr-900);
                     background-color: var(--_clr-200);
+                }
+
+                &:focus-visible {
+                    background-color: var(--_clr-accent-700);
+                    color: var(--_clr-0);
                 }
 
                 &:active {
@@ -309,9 +316,13 @@
                         opacity var(--_trans-normal),
                         border-color var(--_trans-fast);
 
-            &:hover, &.hover {
+            &:hover, &.hover, &:focus {
                 color: var(--_clr-1000);
                 border-color: var(--_clr-500);
+            }
+
+            &:focus-visible {
+                outline: var(--_focus-outline);
             }
 
             &.dim {

@@ -223,6 +223,7 @@
             align-items: center;
             justify-content: center;
             color: var(--_clr-800);
+            position: relative;
 
             padding: var(--_pad-xl) var(--_pad-xl);
             background-color: var(--_clr-100);
@@ -236,9 +237,15 @@
                 width: 15px;
             }
 
-            &:hover {
+            &:hover, &:focus {
                 color: var(--_clr-900);
                 background-color: var(--_clr-150);
+            }
+
+            &:focus-visible {
+                outline-offset: calc(-1 * var(--_focus-outline-width));
+                outline: var(--_focus-outline);
+                z-index: 50;
             }
 
             &:active {

@@ -69,9 +69,8 @@
 
     input {
         &:focus-visible + label {
-            // show outline when keyboard focused
-            outline: solid var(--outline-width) var(--clr-focus);
-            outline-offset: calc(-1 * var(--outline-width));
+            outline-offset: calc(-1 * var(--_focus-outline-width));
+            outline: var(--_focus-outline);
         }
 
         &:checked + label {

@@ -170,6 +170,11 @@
             color: var(--_clr-1000);
             background-color: var(--_clr-200);
         }
+
+        &:focus-visible {
+            outline-offset: calc(-1 * var(--_focus-outline-width));
+            outline: var(--_focus-outline);
+        }
     }
 
     .flag {
