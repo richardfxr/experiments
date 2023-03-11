@@ -9,8 +9,9 @@
     import type { Country } from '../store/store.js';    
     import countries from '$lib/globe-countries.json';
     import { Uganda } from '../routes/uganglobe/data.js';
-    import Plus from './SVGs/UGN-plus.svelte';
-    import Minus from './SVGs/UGN-minus.svelte';
+    import Plus from '$lib/SVGs/UGN-plus.svelte';
+    import Minus from '$lib/SVGs/UGN-minus.svelte';
+    import UpIndicactor from '$lib/SVGs/UGN-upIndicactor.svelte';
 
     /* === PROPS ============================== */
     export let countryInfo: { [key: string]: {flag: string, lat: number, lng: number} };
@@ -21,6 +22,7 @@
     /* === REFS =============================== */
     let globeContainer: HTMLElement;
     let globeViz: HTMLElement;
+    let scrollToTopObserver: HTMLElement;
 
     /* === VARIABLES ========================== */
     let curAlt = 0;
@@ -99,6 +101,15 @@
             $UGNaltOffset = 0.6;
 
         $UGNglobe.onZoom(pov => curAlt = pov.altitude);
+
+        // create observer
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                globeContainer.classList.toggle("offScreen", entry.isIntersecting);
+            })
+        }, {rootMargin: "0px 0px -100% 0px"});
+        
+        observer.observe(scrollToTopObserver);
 	});
 </script>
 
@@ -108,6 +119,7 @@
 
 <div
     class="globeContainer"
+    tabindex="-1"
     bind:this={globeContainer}>
     <div id="globeViz" bind:this={globeViz}></div>
     <div class="controls">
@@ -128,12 +140,31 @@
             <Minus />
         </button>
     </div>
+
+    <div class="scrollToTop-observer" bind:this={scrollToTopObserver}></div>
+    <button
+        class="scrollToTop"
+        type="button"
+        on:click={() => {
+            globeContainer.focus();
+            setTimeout(function () {
+                window.scrollTo(0, 0);
+            },2);
+        }}>
+        <span class="visuallyHidden">back to top</span>
+        <UpIndicactor />
+    </button>
 </div>
 
 
 
 <style lang="scss">
     :global {
+        body {
+            // internal variables
+        --_scrollToTop-height: calc(2 * var(--_pad-xl) + 15px);
+        }
+
         .arcLabel {
             display: flex;
             flex-flow: row wrap;
@@ -161,6 +192,8 @@
                 border-radius: var(--_border-radius-sm);
             }
         }
+
+        
     }
 
     .globeContainer {
@@ -221,14 +254,57 @@
         }
     }
 
+    .scrollToTop-observer {
+        display: none;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+
+        height: var(--_scrollToTop-height);
+    }
+
+    :global {
+        .scrollToTop {
+            display: none;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: var(--_clr-700);
+
+            padding: var(--_pad-xl);
+            background-color: var(--_clr-0);
+
+            transition: color var(--_trans-fast),
+                        background-color var(--_trans-fast),
+                        transform var(--_trans-fast);
+
+            .icon {
+                display: block;
+                width: 15px;
+            }
+        }
+    }
+    
+
     @media (max-width: $UGNbp-tablet) and (orientation: portrait), (max-width: $UGNbp-mobile) {
         .globeContainer {
-            position: relative;
-            top: unset;
-            width: calc(100% - var(--_pad-border));
-            height: 120vw;
+            // internal variables
+            --_height: 120vw;
 
-            margin: calc(var(--_pad-border) / 2);
+            position: sticky;
+            top: calc(-1 * var(--_height) + var(--_scrollToTop-height));
+            width: calc(100% - var(--_pad-border));
+            height: var(--_height);
+
+            margin:
+                calc(var(--_pad-border) / 2)
+                calc(var(--_pad-border) / 2)
+                calc(-1 * var(--_scrollToTop-height))
+                calc(var(--_pad-border) / 2);
             background-color: #ffffff;
             border-radius: var(--_border-radius-md);
             overflow: hidden;
@@ -236,6 +312,22 @@
 
         .controls {
             flex-flow: row-reverse nowrap;
+        }
+
+        .scrollToTop-observer {
+            display: block;
+        }
+
+        :global {
+            .scrollToTop {
+                display: flex;
+                justify-content: center;
+                transform: translateY(var(--_scrollToTop-height));
+            }
+
+            .offScreen .scrollToTop {
+                transform: translateY(0px);
+            }
         }
     }
 </style>
