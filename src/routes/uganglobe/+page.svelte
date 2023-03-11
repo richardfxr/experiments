@@ -15,8 +15,9 @@
         } from '../../store/store';
     import { Uganda } from './data.js';
     import Checkboxes from '$lib/UGN-checkboxes.svelte';
-    import Search from '$lib/SVGs/UGN-search.svelte';
     import DateSelector from '$lib/UGN-dateSelector.svelte';
+    import Search from '$lib/SVGs/UGN-search.svelte';
+    import Cross from '$lib/SVGs/UGN-cross.svelte';
 
     // assign data to stores
     $UGNlistHoverCountry = null;
@@ -100,6 +101,14 @@
             placeholder="Search countries"
             bind:this={searchInput}
             bind:value={searchTerm}>
+        <button
+            class="clear"
+            type="button"
+            disabled={searchTerm === ""}
+            on:click={() => searchTerm = ""}>
+            <span class="visuallyHidden">clear search</span>
+            <Cross />
+        </button>
     </div>
     
     <div class="filters">
@@ -169,7 +178,6 @@
         .searchBar {
             display: flex;
             flex-flow: row nowrap;
-            gap: var(--_pad-md);
             width: 100%;
 
             color: var(--_clr-700);
@@ -190,17 +198,51 @@
                 color: var(--_clr-1000);
             }
 
-            :global(.icon) {
+            :global(#search.icon) {
                 min-width: 18px;
                 width: 18px;
+                margin-right: var(--_pad-md);
                 margin-left: var(--_pad-2xl);
             }
 
             input {
-                padding: var(--_pad-md) var(--_pad-2xl) var(--_pad-md) 0;
+                flex-grow: 1;
+                padding: var(--_pad-md) 0;
 
                 &::-webkit-search-cancel-button {
                     -webkit-appearance: none;
+                }
+            }
+
+            button.clear {
+                color: var(--_clr-700);
+
+                padding: var(--_pad-xl) var(--_pad-2xl);
+                background-color: var(--_clr-100);
+                border-radius: var(--_border-radius-md);
+
+                transition: color var(--_trans-fast),
+                            background-color var(--_trans-fast),
+                            opacity var(--_trans-fast);
+
+                :global(.icon) {
+                    display: block;
+                    width: 15px;
+                }
+
+                &:hover {
+                    color: var(--_clr-900);
+                    background-color: var(--_clr-200);
+                }
+
+                &:active {
+                    color: var(--_clr-1000);
+                    background-color: var(--_clr-300);
+                }
+
+                &:disabled {
+                    cursor: default;
+                    opacity: 0;
                 }
             }
         }
