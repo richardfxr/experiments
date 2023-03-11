@@ -72,6 +72,7 @@
             <p>Data provided by the <a href="https://data.unhcr.org/en/country/uga" target="_blank" rel="noreferrer">UNHCR Uganda Comprehensive Refugee Response Portal</a>.</p>
             <p>Designed and developed by <a href="https://www.richardfxr.com/" target="_blank" rel="noreferrer author">Richard Fu</a>. <a href="https://github.com/richardfxr/misc" target="_blank" rel="noreferrer">Source code available on GitHub</a>.</p>
             <p><a href="https://www.khronos.org/webgl/" target="_blank" rel="noreferrer">WebGL</a> globe created with <a href="https://globe.gl/" target="_blank" rel="noreferrer">globe.gl</a>.</p>
+            <p class="version">v0.1.1 alpha</p>
         </footer>
     </div>
 </main>
