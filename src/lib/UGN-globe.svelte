@@ -5,11 +5,12 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
-    import { UGNglobe } from '../store/store';
-    import { UGNcountryInfo, UGNaltOffset } from '../store/store.js';
+    import { UGNglobe, UGNcountryInfo, UGNaltOffset } from '../store/store.js';
     import type { Country } from '../store/store.js';    
     import countries from '$lib/globe-countries.json';
     import { Uganda } from '../routes/uganglobe/data.js';
+    import Plus from './SVGs/UGN-plus.svelte';
+    import Minus from './SVGs/UGN-minus.svelte';
 
     /* === PROPS ============================== */
     export let countryInfo: { [key: string]: {flag: string, lat: number, lng: number} };
@@ -20,6 +21,9 @@
     /* === REFS =============================== */
     let globeContainer: HTMLElement;
     let globeViz: HTMLElement;
+
+    /* === VARIABLES ========================== */
+    let curAlt = 0;
 
     /* === REACTIVE DECLARATIONS ============== */
     $: if ($UGNglobe) $UGNglobe.arcsData(curCountries);
@@ -47,6 +51,15 @@
         
         $UGNglobe.arcColor((country: any) => getArcColor(country, hoverCountry));
     };
+
+    function zoom(type: "in" | "out"): void {
+        if (!$UGNglobe) return;
+
+        let altChange = 0;
+        type === "in" ? altChange = -0.3 : altChange = 0.3;
+
+        $UGNglobe.pointOfView({ altitude: curAlt + altChange }, 200);
+    }
     
     /* === LIFECYCLE ========================== */
     onMount(() => {
@@ -84,6 +97,8 @@
         // set zoom based on aspect ratio
         if (globeContainer.offsetWidth <= globeContainer.offsetHeight)
             $UGNaltOffset = 0.6;
+
+        $UGNglobe.onZoom(pov => curAlt = pov.altitude);
 	});
 </script>
 
@@ -95,6 +110,24 @@
     class="globeContainer"
     bind:this={globeContainer}>
     <div id="globeViz" bind:this={globeViz}></div>
+    <div class="controls">
+        <button
+            class="zoom"
+            type="button"
+            disabled={curAlt <= 0.5}
+            on:click={() => zoom("in")}>
+            <span class="visuallyHidden">zoom in</span>
+            <Plus />
+        </button>
+        <button
+            class="zoom"
+            type="button"
+            disabled={curAlt >= 4}
+            on:click={() => zoom("out")}>
+            <span class="visuallyHidden">zoom out</span>
+            <Minus />
+        </button>
+    </div>
 </div>
 
 
@@ -142,6 +175,52 @@
         overflow: hidden;
     }
 
+    .controls {
+        display: flex;
+        flex-flow: column nowrap;
+        position: absolute;
+        top: var(--_pad-md);
+        left: var(--_pad-md);
+
+        background-color: var(--_clr-100);
+        border-radius: var(--_border-radius-sm);
+
+        .zoom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--_clr-800);
+
+            padding: var(--_pad-xl) var(--_pad-xl);
+            background-color: var(--_clr-100);
+            border-radius: var(--_border-radius-sm);
+
+            transition: color var(--_trans-fast),
+                        background-color var(--_trans-fast);
+
+            :global(.icon) {
+                display: block;
+                width: 15px;
+            }
+
+            &:hover {
+                color: var(--_clr-900);
+                background-color: var(--_clr-150);
+            }
+
+            &:active {
+                color: var(--_clr-1000);
+                background-color: var(--_clr-300);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                color: var(--_clr-400);
+                background-color: var(--_clr-100);
+            }
+        }
+    }
+
     @media (max-width: $UGNbp-tablet) and (orientation: portrait), (max-width: $UGNbp-mobile) {
         .globeContainer {
             position: relative;
@@ -153,6 +232,10 @@
             background-color: #ffffff;
             border-radius: var(--_border-radius-md);
             overflow: hidden;
+        }
+
+        .controls {
+            flex-flow: row-reverse nowrap;
         }
     }
 </style>
