@@ -236,15 +236,6 @@
             padding: var(--_pad-lg) 0;
             border-bottom: solid 1px var(--_clr-200);
 
-            transition: color var(--_trans-fast),
-                        opacity var(--_trans-normal),
-                        border-color var(--_trans-fast);
-
-            &:hover {
-                color: var(--_clr-1000);
-                border-color: var(--_clr-500);
-            }
-
             .name {
                 text-align: left;
                 font-size: var(--_font-lg);
