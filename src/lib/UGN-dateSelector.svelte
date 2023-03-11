@@ -82,7 +82,7 @@
 
         &:disabled {
             cursor: not-allowed;
-            color: var(--_clr-500);
+            color: var(--_clr-400);
             background-color: var(--_clr-150);
         }
     }

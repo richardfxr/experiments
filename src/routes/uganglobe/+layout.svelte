@@ -80,6 +80,7 @@
             --_clr-700: #666666;
             --_clr-600: #7a7a7a;
             --_clr-500: #8d8d8d;
+            --_clr-400: #a8a8a8;
             --_clr-300: #bebebe;
             --_clr-200: #d1d1d1;
             --_clr-150: #dbdbdb;
