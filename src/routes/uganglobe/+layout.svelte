@@ -1,5 +1,6 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
+    import { onMount } from 'svelte';
     import Globe from '$lib/UGN-globe.svelte';
     import { untypedCountryInfo, untypedPopulationData } from './data.js';
     import {
@@ -10,11 +11,29 @@
         UGNglobeHoverCountry,
         UGNlistHoverCountry
     } from '../../store/store.js';
+    import RightIndicator from '$lib/SVGs/UGN-rightIndicator.svelte';
+    import DownIndicator from '$lib/SVGs/UGN-downIndicator.svelte';
 
     // assign data to stores
     $UGNcountryInfo = untypedCountryInfo;
     $UGNpopulationData = untypedPopulationData;
     $UGNcurTimeIndex = $UGNpopulationData.length - 1;
+
+    /* === REFS =============================== */
+    let skipButton: HTMLElement;
+    let sideBar: HTMLElement;    
+
+    /* === LIFECYCLE ========================== */
+    onMount(() => {
+        // create observer
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                skipButton.classList.toggle("halfWay", entry.isIntersecting);
+            })
+        }, {rootMargin: "0px 0px -50% 0px"});
+        
+        observer.observe(sideBar);
+    });
 </script>
 
 
@@ -24,13 +43,30 @@
 </svelte:head>
 
 <main>
+    <button
+        class="skip"
+        type="button"
+        bind:this={skipButton}
+        on:click={() => {
+            sideBar.scrollIntoView(true);
+            sideBar.focus();
+        }}>
+        <span class="visuallyHidden">skip three dimensional globe</span>
+        <RightIndicator />
+        <DownIndicator />
+    </button>
+
     <Globe 
         countryInfo={$UGNcountryInfo}
         curCountries={$UGNcurCountries}
         bind:globeHoverCountry = {$UGNglobeHoverCountry}
         bind:listHoverCountry = {$UGNlistHoverCountry} />
 
-    <div class="sidebar">
+    <div
+        class="sidebar"
+        tabindex="-1"
+        bind:this={sideBar}>
+        
         <slot></slot>
 
         <footer>
@@ -75,6 +111,7 @@
             --_trans-normal: 0.2s ease;
 
             --_clr-1000: #000000;
+            --_clr-950: #222222;
             --_clr-900: #303030;
             --_clr-800: #474747;
             --_clr-700: #666666;
@@ -101,6 +138,46 @@
         flex-flow: row nowrap;
         position: relative;
         width: 100%;
+    }
+
+    :global {
+        .skip {
+            position: fixed;
+            top: calc(var(--_pad-border) + var(--_pad-md));
+            left: calc(var(--_pad-border) + var(--_pad-md));
+            z-index: 100;
+            color: var(--_clr-150);
+
+            padding: var(--_pad-xl) var(--_pad-xl);
+            background-color: var(--_clr-900);
+            border-radius: var(--_border-radius-sm);
+            transform: translateY(calc(-1 * (var(--_pad-border) + var(--_pad-md) + 2 * var(--_pad-xl) + 15px)));
+
+            transition: color var(--_trans-fast),
+                        background-color var(--_trans-fast),
+                        transform var(--_trans-fast);
+
+            .icon {
+                display: block;
+                width: 15px;
+            }
+
+            #downIndicator {
+                display: none;
+            }
+
+            &:hover, &:focus {
+                transform: translateY(0px);
+                color: var(--_clr-100);
+                background-color: var(--_clr-950);
+            }
+
+            &:active {
+                transform: translateY(0px);
+                color: var(--_clr-0);
+                background-color: var(--_clr-1000);
+            }
+        }
     }
 
     .sidebar {
@@ -137,6 +214,48 @@
             flex-flow: column nowrap;
             align-items: center;
             justify-content: stretch;
+        }
+
+        :global {
+            .skip {
+                position: fixed;
+                top: unset;
+                left: unset;
+                bottom: var(--_pad-xl);
+                z-index: 100;
+                color: var(--_clr-150);
+
+                padding: var(--_pad-xl) var(--_pad-xl);
+                background-color: var(--_clr-900);
+                border-radius: var(--_border-radius-sm);
+                transform: translateY(0px);
+
+                transition: color var(--_trans-fast),
+                            background-color var(--_trans-fast),
+                            transform var(--_trans-fast);
+
+                #rightIndicator {
+                    display: none;
+                }
+
+                #downIndicator {
+                    display: block;
+                }
+
+                &.halfWay {
+                    transform: translateY(calc(var(--_pad-xl) + 2 * var(--_pad-xl) + 15px));
+                }
+
+                &:hover, &:focus {
+                    color: var(--_clr-100);
+                    background-color: var(--_clr-950);
+                }
+
+                &:active {
+                    color: var(--_clr-0);
+                    background-color: var(--_clr-1000);
+                }
+            }
         }
 
         .sidebar {
