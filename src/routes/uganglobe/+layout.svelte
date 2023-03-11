@@ -69,7 +69,9 @@
         <slot></slot>
 
         <footer>
-            Early preview. Expect bugs.
+            <p>Data provided by the <a href="https://data.unhcr.org/en/country/uga" target="_blank" rel="noreferrer">UNHCR Uganda Comprehensive Refugee Response Portal</a>.</p>
+            <p>Designed and developed by <a href="https://www.richardfxr.com/" target="_blank" rel="noreferrer author">Richard Fu</a>. <a href="https://github.com/richardfxr/misc" target="_blank" rel="noreferrer">Source code available on GitHub</a>.</p>
+            <p><a href="https://www.khronos.org/webgl/" target="_blank" rel="noreferrer">WebGL</a> globe created with <a href="https://globe.gl/" target="_blank" rel="noreferrer">globe.gl</a>.</p>
         </footer>
     </div>
 </main>
@@ -92,7 +94,7 @@
         body {
             // internal variables
             --_pad-border: 20px;
-            --_pad-4xl: 30px;
+            --_pad-4xl: 35px;
             --_pad-2xl: 20px;
             --_pad-xl: 15px;
             --_pad-lg: 12px;
@@ -190,9 +192,23 @@
     }
 
     footer {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: flex-start;
+        gap: var(--_pad-lg);
         color: var(--_clr-700);
         
         padding-top: var(--_pad-4xl);
+
+        a {
+            text-decoration: underline;
+        }
+
+        .version {
+            padding: var(--_pad-xs) var(--_pad-md);
+            border: solid 1px var(--_clr-300);
+            border-radius: var(--_border-radius-sm);
+        }
     }
 
     @media (max-width: 800px) {
