@@ -280,15 +280,6 @@
                 #downIndicator {
                     display: block;
                 }
-                &:hover, &:focus {
-                    color: var(--_clr-100);
-                    background-color: var(--_clr-950);
-                }
-
-                &:active {
-                    color: var(--_clr-0);
-                    background-color: var(--_clr-1000);
-                }
             }
 
             .halfWay .skip{

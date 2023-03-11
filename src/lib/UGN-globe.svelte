@@ -145,6 +145,7 @@
     <button
         class="scrollToTop"
         type="button"
+        tabindex="-1"
         on:click={() => {
             globeContainer.focus();
             setTimeout(function () {
