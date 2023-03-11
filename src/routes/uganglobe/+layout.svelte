@@ -20,7 +20,7 @@
     $UGNcurTimeIndex = $UGNpopulationData.length - 1;
 
     /* === REFS =============================== */
-    let skipButton: HTMLElement;
+    let main: HTMLElement;
     let sideBar: HTMLElement;    
 
     /* === LIFECYCLE ========================== */
@@ -28,7 +28,7 @@
         // create observer
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                skipButton.classList.toggle("halfWay", entry.isIntersecting);
+                main.classList.toggle("halfWay", entry.isIntersecting);
             })
         }, {rootMargin: "0px 0px -50% 0px"});
         
@@ -42,13 +42,12 @@
     <meta name="theme-color" content="##f2f2f2" />
 </svelte:head>
 
-<main>
+<main bind:this={main}>
     <button
         class="skip"
         type="button"
-        bind:this={skipButton}
         on:click={() => {
-            sideBar.scrollIntoView(true);
+            sideBar.scrollIntoView();
             sideBar.focus();
         }}>
         <span class="visuallyHidden">skip three dimensional globe</span>
@@ -241,11 +240,6 @@
                 #downIndicator {
                     display: block;
                 }
-
-                &.halfWay {
-                    transform: translateY(calc(var(--_pad-xl) + 2 * var(--_pad-xl) + 15px));
-                }
-
                 &:hover, &:focus {
                     color: var(--_clr-100);
                     background-color: var(--_clr-950);
@@ -256,6 +250,10 @@
                     background-color: var(--_clr-1000);
                 }
             }
+
+            .halfWay .skip{
+                transform: translateY(calc(var(--_pad-xl) + 2 * var(--_pad-xl) + 15px));
+            }
         }
 
         .sidebar {
@@ -263,7 +261,11 @@
             width: 100%;
             max-width: 500px;
 
-            padding: var(--_pad-border);
+            padding:
+                calc(var(--_pad-border) + 2 * var(--_pad-xl) + 15px)
+                var(--_pad-border)
+                var(--_pad-border)
+                var(--_pad-border);
         }
     }
 
