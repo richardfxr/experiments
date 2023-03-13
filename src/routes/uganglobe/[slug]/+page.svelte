@@ -31,6 +31,7 @@
     }];
 
     /* === VARIABLES ========================== */
+    const countryName = $UGNcountryInfo[slug].name;
     let femalePopulation = [0, 0, 0, 0, 0];
     let malePopulation = [0, 0, 0, 0, 0];
     
@@ -74,13 +75,26 @@
 
 
 
+<svelte:head>
+    <title>{countryName} refugees in Uganda</title>
+    <meta
+        name="description"
+        content={"Age data on" + countryName + "refugees in Uganda."}
+    />
+    <meta property="og:image" content="https://misc.richardfxr.com/images/UGN/OGimage-1.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+</svelte:head>
+
+
+
 <div class="flag">
     <img src={"../" + $UGNcountryInfo[slug].flag} alt={$UGNcountryInfo[slug].name + " flag"}>
 </div>
 
 <h1 class="totalPopulation">
     <span class="bigNumber">{Intl.NumberFormat().format($UGNcurCountries[0].totalPopulation)}</span>
-    <span class="smallText">refugees from {$UGNcountryInfo[slug].name}</span>
+    <span class="smallText">refugees from {countryName}</span>
 </h1>
 
 <a href="/uganglobe" class="back">

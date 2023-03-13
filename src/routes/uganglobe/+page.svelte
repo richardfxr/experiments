@@ -82,6 +82,19 @@
 
 
 
+<svelte:head>
+    <title>Uganda refugee data: countries of origin</title>
+    <meta
+        name="description"
+        content="A searchable list of countries of origin for all refugees in Uganda visualizes on a 3D globe."
+    />
+    <meta property="og:image" content="https://misc.richardfxr.com/images/UGN/OGimage-1.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+</svelte:head>
+
+
+
 <h1 class="totalPopulation">
     <span class="bigNumber">{Intl.NumberFormat().format(curTotalPopulation)}</span>
     <span class="smallText">refugees in Uganda</span>
