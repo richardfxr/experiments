@@ -79,7 +79,7 @@
     <title>{countryName} refugees in Uganda</title>
     <meta
         name="description"
-        content={"Age data on" + countryName + "refugees in Uganda."}
+        content={"Age data on " + countryName + " refugees in Uganda."}
     />
     <meta property="og:image" content="https://misc.richardfxr.com/images/UGN/OGimage-1.jpg" />
     <meta property="og:image:width" content="1200" />
