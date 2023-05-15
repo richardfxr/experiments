@@ -12,6 +12,8 @@
     import Plus from '$lib/SVGs/UGN-plus.svelte';
     import Minus from '$lib/SVGs/UGN-minus.svelte';
     import UpIndicactor from '$lib/SVGs/UGN-upIndicactor.svelte';
+    import EnterFullscreen from './SVGs/UGN-enterFullscreen.svelte';
+    import ExitFullscreen from './SVGs/UGN-exitFullscreen.svelte';
 
     /* === PROPS ============================== */
     export let countryInfo: { [key: string]: {flag: string, lat: number, lng: number} };
@@ -26,6 +28,8 @@
 
     /* === VARIABLES ========================== */
     let curAlt = 0;
+    let allowFullscreen = false;
+    let isFullscreen = false;
 
     /* === REACTIVE DECLARATIONS ============== */
     $: if ($UGNglobe) $UGNglobe.arcsData(curCountries);
@@ -61,6 +65,30 @@
         type === "in" ? altChange = -0.3 : altChange = 0.3;
 
         $UGNglobe.pointOfView({ altitude: curAlt + altChange }, 200);
+    }
+
+    function checkFullscreen(): void {
+        // @ts-ignore
+        isFullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+    }
+
+    function toggleFullscreen(): void {
+        if (!allowFullscreen) return;
+
+        // check if document is currently full screen
+        if (isFullscreen) {
+            // get supported exitFullScreen
+            // @ts-ignore
+            let cancelFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
+            cancelFullScreen.call(document);
+            isFullscreen = false;
+        } else {
+            // get supported requestFullScreen
+            // @ts-ignore
+            let requestFullScreen = document.documentElement.requestFullscreen || document.documentElement.mozRequestFullScreen || document.documentElement.webkitRequestFullScreen || document.documentElement.msRequestFullscreen;
+            requestFullScreen.call(document.documentElement);
+            isFullscreen = true;
+        }
     }
     
     /* === LIFECYCLE ========================== */
@@ -110,12 +138,16 @@
         }, {rootMargin: "0px 0px -100% 0px"});
         
         observer.observe(scrollToTopObserver);
+
+        // check if full screen is allowed then check if any element is fullscreened
+        allowFullscreen = document.fullscreenEnabled;
+        checkFullscreen();
 	});
 </script>
 
 
 
-<svelte:window on:resize={resizeGlobe}></svelte:window>
+<svelte:window on:resize={() => { resizeGlobe(); checkFullscreen(); }}></svelte:window>
 
 <div
     class="globeContainer"
@@ -140,6 +172,20 @@
             <Minus />
         </button>
     </div>
+
+    <button
+        class="fullscreen"
+        type="button"
+        on:click={toggleFullscreen}
+        disabled={!allowFullscreen}>
+        {#if isFullscreen}
+            <span class="visuallyHidden">exit fullscreen</span>
+            <ExitFullscreen />
+        {:else}
+            <span class="visuallyHidden">enter fullscreen</span>
+            <EnterFullscreen />
+        {/if}
+    </button>
 
     <div class="scrollToTop-observer" bind:this={scrollToTopObserver}></div>
     <button
@@ -259,6 +305,51 @@
                 color: var(--_clr-400);
                 background-color: var(--_clr-100);
             }
+        }
+    }
+
+    .fullscreen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: var(--_pad-md);
+        right: var(--_pad-md);
+
+        background-color: var(--_clr-100);
+        border-radius: var(--_border-radius-sm);
+
+        color: var(--_clr-800);
+        background-color: var(--_clr-100);
+        padding: var(--_pad-xl) var(--_pad-xl);
+        border-radius: var(--_border-radius-sm);
+
+        transition: color var(--_trans-fast),
+                    background-color var(--_trans-fast);
+
+        :global(.icon) {
+            display: block;
+            width: 15px;
+        }
+
+        &:hover, &:focus {
+            color: var(--_clr-900);
+            background-color: var(--_clr-150);
+        }
+
+        &:focus-visible {
+            outline-offset: calc(-1 * var(--_focus-outline-width));
+            outline: var(--_focus-outline);
+            z-index: 50;
+        }
+
+        &:active {
+            color: var(--_clr-1000);
+            background-color: var(--_clr-300);
+        }
+
+        &:disabled {
+            display: none;
         }
     }
 
