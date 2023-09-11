@@ -102,7 +102,8 @@
         minPoints={1}
         maxPoints={points.length}
         {scatterIndex}
-        {scattered} />
+        {scattered}
+        on:scatter={() => scatterPointsAt()} />
     
     <div
         class="canvas"

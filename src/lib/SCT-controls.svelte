@@ -1,16 +1,22 @@
 <script lang="ts">
+    /* === IMPORTS ============================ */
+    import { createEventDispatcher } from 'svelte';
+
     /* === PROPS ============================== */
     export let numPoints: number; // bind
     export let minPoints: number;
     export let maxPoints: number;
     export let scatterIndex: number;
-    export let scattered: boolean
+    export let scattered: boolean;
+
+    /* === CONSTANTS ========================== */
+    const dispatch = createEventDispatcher();
 </script>
 
 
 
 <div class="controls">
-    <button>
+    <button on:click={() => dispatch("scatter")}>
         <div class="wrapper">
             <span id="scatter">scatter</span>
             <span id="numPoints">{numPoints}</span>
