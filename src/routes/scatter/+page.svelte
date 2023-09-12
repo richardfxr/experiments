@@ -39,7 +39,7 @@
         points = points;
 
         scatterIndex++;
-        if (scatterIndex === numPoints) {
+        if (scatterIndex >= numPoints && !scattered) {
             awaitingAnimation = true;
             scattered = true;
             setTimeout(() => {
