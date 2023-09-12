@@ -96,6 +96,15 @@
 
 
 
+<svelte:head>
+    <title>Scatter</title>
+    <meta
+        name="description"
+        content="Scatter points on the page."
+    />
+    <link rel="icon" href="SCT-favicon.png" />
+</svelte:head>
+
 <main>
     <Controls
         bind:numPoints={numPoints}
@@ -159,7 +168,8 @@
             // colors
             --clr-bg: #f7f5ee;
             --clr-red: #c1272d;
-            --clr-line: #d3d3d1;
+            --clr-line: #cfcfbf;
+            --clr-point-outline: #86857b;
             --clr-controls-text: #ffffff;
             --clr-controls-bg: #666666;
             --clr-controls-bg-hover: #585858;
@@ -248,6 +258,8 @@
                     right: $_point-border-offset;
                     bottom: $_point-border-offset;
                     left: $_point-border-offset;
+
+                    border-color: var(--clr-point-outline);
                 }
             }
         }
