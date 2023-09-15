@@ -34,3 +34,9 @@ Visualizing the countries of origin for refugees in Uganda. [Visit the productio
 Data provided by the Government of Uganda through the [UNHCR Operational Data Portal](https://data.unhcr.org/en/country/uga).
 
 3D globe created with [globe.gl](https://globe.gl/), a wrapper for the [three-globe](https://github.com/vasturiano/three-globe) plugin built on top of [ThreeJS](https://threejs.org/) and [WebGL](https://www.khronos.org/webgl/). Flags provided by [flag-icons](https://flagicons.lipis.dev/).
+
+## [Scatter](https://misc.richardfxr.com/scatter)
+
+> Most files are available under [src\routes\scatter](https://github.com/richardfxr/misc/tree/main/src/routes/scatter) or prefixed with `SCT-` in [src\lib](https://github.com/richardfxr/misc/tree/main/src/lib).
+
+A simple page that scatters a specified number of points on the screen.
