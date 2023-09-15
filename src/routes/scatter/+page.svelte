@@ -103,6 +103,13 @@
         content="Scatter points on the page."
     />
     <link rel="icon" href="SCT-favicon.png" />
+    <meta name="theme-color" content="#f7f5ee" />
+    <!-- open graph image -->
+    <meta property="og:image" content="SCT-og-image-1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Eight dots scattered across the page." />
 </svelte:head>
 
 <main>
