@@ -14,27 +14,9 @@
 
 
 <style lang="scss" global>
-    main {
-        display: flex;
-        flex-flow: row nowrap;
-        background-color: black;
-    }
-
     #canvas {
         height: 100vh;
-        width: 100vh;
+        width: 100%;
         background-color: rebeccapurple;
-    }
-
-    // === MEDIA QUERIES ==========================
-    @media (orientation: portrait) {
-        main {
-            display: block;
-        }
-
-        #canvas {
-            height: 100vw;
-            width: 100vw;
-        }
     }
 </style>
