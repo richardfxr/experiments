@@ -23,12 +23,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     }
 
     float dis = length(uv);
-    vec3 color = palette(dis);
+    vec3 color = palette(dis / 3. + (sin(iTime / 6.)));
 
-    dis = sin(dis * dis * 12. - 2. * iTime) / 10.;
+    dis = sin(dis * dis * 8. - iTime) / 10.;
     dis = abs(dis);
 
-    dis = 0.05 / dis;
+    dis = 0.04 / dis;
 
     color *= dis;
 
