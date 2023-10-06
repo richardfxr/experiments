@@ -25,7 +25,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     float dis = length(uv);
     vec3 color = palette(dis);
 
-    dis = sin(dis * 35. - 5.5 * iTime) / 10.;
+    dis = sin(dis * dis * 12. - 2. * iTime) / 10.;
     dis = abs(dis);
 
     dis = 0.05 / dis;
