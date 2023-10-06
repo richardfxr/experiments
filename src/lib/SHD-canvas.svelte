@@ -4,6 +4,9 @@
     import * as THREE from 'three';
     import FragmentShader from '../shaders/test.glsl?raw';
 
+    /* === PROPS ============================== */
+    export let timeScale: number;
+
     /* === THREE ============================== */
     let renderer: THREE.WebGLRenderer;
     let camera: THREE.OrthographicCamera;
@@ -18,6 +21,8 @@
 		iTime: { value: 0 },
 		iResolution: { value: new THREE.Vector3() },
 	};
+    let scaledTime = 0;
+    let prevTime = 0;
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
@@ -26,10 +31,13 @@
     /**
      * Three.js render function that is called each frame
      */
-    function render(time: any): void {
-        time *= 0.001; // convert to seconds
+    function render(time: number): void {
+        // update time
+        let elapsedTime = time - prevTime;
+        scaledTime += elapsedTime * timeScale;
+        prevTime = time;
 
-		uniforms.iTime.value = time;
+		uniforms.iTime.value = scaledTime * 0.001;// convert to seconds
         
         renderer.render(scene, camera);
         requestAnimationFrame(render);
@@ -81,7 +89,7 @@
         plane = new THREE.PlaneGeometry(2, 2);
         const material = new THREE.ShaderMaterial({
             fragmentShader: FragmentShader,
-            uniforms,
+            uniforms
         });
         scene.add(new THREE.Mesh(plane, material));
 
