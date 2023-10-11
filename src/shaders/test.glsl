@@ -2,6 +2,7 @@
 
 uniform vec3 iResolution;
 uniform float iTime;
+uniform float zoom;
 
 vec3 palette( in float t ) {
     vec3 a = vec3(0.500, 0.500, 0.500);
@@ -22,7 +23,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         uv.y *= iResolution.y / iResolution.x;
     }
 
-    float dis = length(uv);
+    float dis = length(uv) * zoom;
     vec3 color = palette(dis / 3. + (sin(iTime / 6.)));
 
     dis = sin(dis * dis * 8. - iTime) / 10.;

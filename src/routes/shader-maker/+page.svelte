@@ -5,13 +5,15 @@
 
     /* === VARIABLES ========================== */
     let timeScale = 2;
+    let zoom = 1;
 </script>
 
 
 
 <main>
     <Canvas
-        {timeScale} />
+        {timeScale}
+        {zoom} />
     <div class="controls">
         <Slider
             bind:value={timeScale}
@@ -20,6 +22,14 @@
             max={6}
             step={0.1}>
             speed
+        </Slider>
+        <Slider
+            bind:value={zoom}
+            id="zoom"
+            min={0.5}
+            max={1.3}
+            step={0.001}>
+            zoom
         </Slider>
     </div>
 </main>

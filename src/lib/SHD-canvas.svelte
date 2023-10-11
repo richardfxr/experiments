@@ -6,6 +6,7 @@
 
     /* === PROPS ============================== */
     export let timeScale: number;
+    export let zoom: number;
 
     /* === THREE ============================== */
     let renderer: THREE.WebGLRenderer;
@@ -20,9 +21,12 @@
     const uniforms = {
 		iTime: { value: 0 },
 		iResolution: { value: new THREE.Vector3() },
+        zoom: { value: zoom }
 	};
     let scaledTime = 0;
     let prevTime = 0;
+
+    $: zoom, updateUniform('zoom');
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
@@ -66,6 +70,14 @@
             size.height * pixelRatio,
             1
         );
+    }
+
+    function updateUniform(uniform: 'zoom'): void {
+        switch (uniform) {
+            case 'zoom':
+                uniforms.zoom.value = zoom;
+                break;
+        }
     }
 
     /* === LIFECYCLE ========================== */
