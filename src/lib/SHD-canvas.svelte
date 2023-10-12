@@ -7,6 +7,7 @@
     /* === PROPS ============================== */
     export let timeScale: number;
     export let zoom: number;
+    export let shape: number;
 
     /* === THREE ============================== */
     let renderer: THREE.WebGLRenderer;
@@ -21,12 +22,14 @@
     const uniforms = {
 		iTime: { value: 0 },
 		iResolution: { value: new THREE.Vector3() },
-        zoom: { value: zoom }
+        zoom: { value: zoom },
+        shape: { value: shape }
 	};
     let scaledTime = 0;
     let prevTime = 0;
 
     $: zoom, updateUniform('zoom');
+    $: shape, updateUniform('shape');
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
@@ -72,10 +75,13 @@
         );
     }
 
-    function updateUniform(uniform: 'zoom'): void {
+    function updateUniform(uniform: 'zoom' | 'shape'): void {
         switch (uniform) {
             case 'zoom':
                 uniforms.zoom.value = zoom;
+                break;
+            case 'shape':
+                uniforms.shape.value = shape;
                 break;
         }
     }

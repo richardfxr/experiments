@@ -2,10 +2,12 @@
     /* === IMPORTS ============================ */
     import Canvas from "$lib/SHD-canvas.svelte";
     import Slider from "$lib/SHD-slider.svelte";
+    import ShapeRadios from "$lib/SHD-shapeRadios.svelte";
 
     /* === VARIABLES ========================== */
     let timeScale = 2;
-    let zoom = 1;
+    let zoom = 1.2;
+    let shape = 1;
 </script>
 
 
@@ -13,7 +15,8 @@
 <main>
     <Canvas
         {timeScale}
-        {zoom} />
+        {zoom}
+        {shape} />
     <div class="controls">
         <Slider
             bind:value={timeScale}
@@ -27,10 +30,11 @@
             bind:value={zoom}
             id="zoom"
             min={0.5}
-            max={1.3}
+            max={1.7}
             step={0.001}>
             zoom
         </Slider>
+        <ShapeRadios bind:shape={shape} />
     </div>
 </main>
 
@@ -68,5 +72,12 @@
         bottom: 0;
         width: min(400px, 100%);
         background-color: black;
+    }
+
+    .label {
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        text-align: center;
     }
 </style>

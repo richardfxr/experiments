@@ -18,7 +18,7 @@
         {max}
         {step}
         bind:value={value} />
-    <label for={id}>
+    <label for={id} class="label">
         <span><slot /></span>
     </label>
 </div>
@@ -37,6 +37,7 @@
     .container {
         position: relative;
         height: var(--slider-height);
+        border-bottom: solid var(--border-width) #3f3f3f;
     }
     
     input {
@@ -111,7 +112,5 @@
         justify-content: center;
         position: absolute;
         inset: 0;
-        
-        color: white;
     }
 </style>
