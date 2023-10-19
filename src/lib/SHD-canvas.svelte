@@ -2,7 +2,7 @@
     /* === IMPORTS ============================ */
     import { onMount } from 'svelte';
     import * as THREE from 'three';
-    import FragmentShader from '../shaders/test.glsl?raw';
+    import FragmentShader from '../shaders/hypnosis.glsl?raw';
 
     /* === PROPS ============================== */
     export let timeScale: number;
