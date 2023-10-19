@@ -118,6 +118,8 @@
         
         .controls {
             max-height: calc(100vh - 30px);
+
+            padding-bottom: 5px;
             background-color: black;
             border-radius: 7px;
             
