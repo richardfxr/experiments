@@ -23,48 +23,60 @@
         {phaseG}
         {phaseB}
         {shape} />
-    <div class="controls">
-        <Slider
-            bind:value={timeScale}
-            id="timeScale"
-            min={0}
-            max={6}
-            step={0.1}>
-            speed
-        </Slider>
-        <Slider
-            bind:value={zoom}
-            id="zoom"
-            min={0.5}
-            max={1.7}
-            step={0.001}>
-            zoom
-        </Slider>
-        <Slider
-            bind:value={phaseR}
-            id="phaseR"
-            min={0}
-            max={1}
-            step={0.001}>
-            red phase
-        </Slider>
-        <Slider
-            bind:value={phaseG}
-            id="phaseG"
-            min={0}
-            max={1}
-            step={0.001}>
-            green phase
-        </Slider>
-        <Slider
-            bind:value={phaseB}
-            id="phaseB"
-            min={0}
-            max={1}
-            step={0.001}>
-            blue phase
-        </Slider>
-        <ShapeRadios bind:shape={shape} />
+    <div class="controlsWrapper">
+        <div class="controls">
+            <Slider
+                bind:value={timeScale}
+                id="timeScale"
+                min={0}
+                max={6}
+                step={0.1}
+                thumbColor="#fff6a3"
+                shadowColor="#e8d100">
+                speed
+            </Slider>
+            <Slider
+                bind:value={zoom}
+                id="zoom"
+                min={0.5}
+                max={1.7}
+                step={0.001}
+                thumbColor="#ffd1ab"
+                shadowColor="#ff7300">
+                zoom
+            </Slider>
+            <Slider
+                bind:value={phaseR}
+                id="phaseR"
+                min={0}
+                max={1}
+                step={0.001}
+                thumbColor="#ffabab"
+                shadowColor="#ff0000">
+                red phase
+            </Slider>
+            <Slider
+                bind:value={phaseG}
+                id="phaseG"
+                min={0}
+                max={1}
+                step={0.001}
+                thumbColor="#96ff96"
+                shadowColor="#00ba00">
+                green phase
+            </Slider>
+            <Slider
+                bind:value={phaseB}
+                id="phaseB"
+                min={0}
+                max={1}
+                step={0.001}
+                thumbColor="#c9c9ff"
+                shadowColor="#3b3bff">
+                blue phase
+            </Slider>
+            <ShapeRadios bind:shape={shape} />
+        </div>
     </div>
 </main>
 
@@ -96,12 +108,21 @@
         background-color: black;
     }
 
-    .controls {
+    .controlsWrapper {
         position: absolute;
         right: 0;
         bottom: 0;
         width: min(400px, 100%);
-        background-color: black;
+        
+        padding: 15px;
+        
+        .controls {
+            max-height: calc(100vh - 30px);
+            background-color: black;
+            border-radius: 7px;
+            
+            overflow: auto;
+        }
     }
 
     .label {

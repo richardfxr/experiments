@@ -5,11 +5,15 @@
     export let min: number;
     export let max: number;
     export let step: number;
+    export let thumbColor: string;
+    export let shadowColor: string;
 </script>
 
 
 
-<div class="container">
+<div
+    class="container"
+    style="--_clr-thumb: {thumbColor}; --_clr-shadow: {shadowColor}">
     <input
         type="range"
         {id}
@@ -21,6 +25,9 @@
     <label for={id} class="label">
         <span><slot /></span>
     </label>
+    <!-- <p class="label outlined" aria-hidden="true">
+        <span><slot /></span>
+    </p> -->
 </div>
 
 
@@ -32,7 +39,7 @@
     $_translateY: calc(-100% + var(--border-width));
     // range input
     $_track-width: 100%;
-    $_thumb-width: 1.5px;
+    $_thumb-width: 2px;
 
     .container {
         position: relative;
@@ -43,7 +50,6 @@
     input {
         // internal variables
         --_margin-hrz: calc(((100% - 22px) / 12 - #{$_thumb-width}) / 2);
-        --_clr-thumb: rgb(255, 149, 149);
         --_track-height: 1px;
 
         // reset all styling
@@ -86,8 +92,8 @@
             height: var(--slider-height);
 
             background-color: var(--_clr-thumb);
-            box-shadow: 0 0 3px 1px red,
-                        0 0 15px red;
+            box-shadow: 0 0 7px var(--_clr-shadow),
+                        0 0 14px 4px var(--_clr-shadow);
         }
 
         &::-moz-range-track {
@@ -101,16 +107,23 @@
             background-color: var(--_clr-thumb);
             border: none;
             border-radius: 0;
-            box-shadow: 0 0 3px 1px red,
-                        0 0 15px red;
+            box-shadow: 0 0 7px var(--_clr-shadow),
+                        0 0 12px 3px var(--_clr-shadow);
         }
     }
 
-    label {
+    .label {
+        pointer-events: none;
         display: flex;
         align-items: center;
         justify-content: center;
         position: absolute;
         inset: 0;
+        z-index: 3;
+
+        &.outlined {
+            z-index: 2;
+            -webkit-text-stroke: 3px black;
+        }
     }
 </style>
