@@ -14,6 +14,7 @@
     let camera: THREE.OrthographicCamera;
     let scene: THREE.Scene;
     let plane: THREE.PlaneGeometry;
+    let loaded = false;
     const size = {
         width: 100,
         height: 100
@@ -111,6 +112,8 @@
         });
         scene.add(new THREE.Mesh(plane, material));
 
+        loaded = true;
+
         resizeRenderer()
         requestAnimationFrame(render);
 	});
@@ -121,11 +124,51 @@
 <svelte:window on:resize={resizeRenderer}/>
 
 <canvas id="canvas" bind:this={canvas}></canvas>
+{#if !scene && !loaded}
+    <div class="text">
+        <h2>Loading WebGL.</h2>
+        <p>If this takes a while, reload the page.</p>
+    </div>
+{:else if !scene}
+    <div class="text">
+        <h2>WebGL is not supported.</h2>
+        <p>Please try a different browser or device.</p>
+    </div>
+{/if}
 
 
 
 <style lang="scss">
     #canvas {
         display: block;
+    }
+
+    .text {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        padding: 0 15px;
+
+        h2, p {
+            color: white;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1rem;
+            font-weight: 400;
+        }
     }
 </style>

@@ -63,7 +63,7 @@
     #canvas {
         height: 100vh;
         width: 100%;
-        background-color: rebeccapurple;
+        background-color: black;
     }
 
     .controls {
