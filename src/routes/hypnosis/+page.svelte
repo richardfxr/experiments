@@ -6,7 +6,7 @@
 
     /* === VARIABLES ========================== */
     let timeScale = 2;
-    let zoom = 1.2;
+    let zoom = 0.5;
     let phaseR = 0.498;
     let phaseG = 0.268;
     let phaseB = 0.068;
@@ -38,8 +38,8 @@
             <Slider
                 bind:value={zoom}
                 id="zoom"
-                min={0.5}
-                max={1.7}
+                min={0}
+                max={1.2}
                 step={0.001}
                 thumbColor="#ffd1ab"
                 shadowColor="#ff7300">

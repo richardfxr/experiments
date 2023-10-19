@@ -26,7 +26,7 @@
     const uniforms = {
 		iTime: { value: 0 },
 		iResolution: { value: new THREE.Vector3() },
-        zoom: { value: zoom },
+        zoom: { value: 1.7 - zoom },
         phaseR: { value: phaseR },
         phaseG: { value: phaseG },
         phaseB: { value: phaseB },
@@ -90,7 +90,7 @@
         ): void {
         switch (uniform) {
             case 'zoom':
-                uniforms.zoom.value = zoom;
+                uniforms.zoom.value = 1.7 - zoom;
                 break;
             case 'phaseR':
                 uniforms.phaseR.value = phaseR;
