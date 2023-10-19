@@ -7,6 +7,9 @@
     /* === VARIABLES ========================== */
     let timeScale = 2;
     let zoom = 1.2;
+    let phaseR = 0.498;
+    let phaseG = 0.268;
+    let phaseB = 0.068;
     let shape = 1;
 </script>
 
@@ -16,6 +19,9 @@
     <Canvas
         {timeScale}
         {zoom}
+        {phaseR}
+        {phaseG}
+        {phaseB}
         {shape} />
     <div class="controls">
         <Slider
@@ -33,6 +39,30 @@
             max={1.7}
             step={0.001}>
             zoom
+        </Slider>
+        <Slider
+            bind:value={phaseR}
+            id="phaseR"
+            min={0}
+            max={1}
+            step={0.001}>
+            red phase
+        </Slider>
+        <Slider
+            bind:value={phaseG}
+            id="phaseG"
+            min={0}
+            max={1}
+            step={0.001}>
+            green phase
+        </Slider>
+        <Slider
+            bind:value={phaseB}
+            id="phaseB"
+            min={0}
+            max={1}
+            step={0.001}>
+            blue phase
         </Slider>
         <ShapeRadios bind:shape={shape} />
     </div>

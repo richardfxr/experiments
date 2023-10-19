@@ -7,6 +7,9 @@
     /* === PROPS ============================== */
     export let timeScale: number;
     export let zoom: number;
+    export let phaseR: number;
+    export let phaseG: number;
+    export let phaseB: number;
     export let shape: number;
 
     /* === THREE ============================== */
@@ -24,12 +27,18 @@
 		iTime: { value: 0 },
 		iResolution: { value: new THREE.Vector3() },
         zoom: { value: zoom },
+        phaseR: { value: phaseR },
+        phaseG: { value: phaseG },
+        phaseB: { value: phaseB },
         shape: { value: shape }
 	};
     let scaledTime = 0;
     let prevTime = 0;
 
     $: zoom, updateUniform('zoom');
+    $: phaseR, updateUniform('phaseR');
+    $: phaseG, updateUniform('phaseG');
+    $: phaseB, updateUniform('phaseB');
     $: shape, updateUniform('shape');
 
     /* === BINDINGS =========================== */
@@ -76,10 +85,21 @@
         );
     }
 
-    function updateUniform(uniform: 'zoom' | 'shape'): void {
+    function updateUniform(
+            uniform: 'zoom' | 'phaseR' | 'phaseG' | 'phaseB' | 'shape'
+        ): void {
         switch (uniform) {
             case 'zoom':
                 uniforms.zoom.value = zoom;
+                break;
+            case 'phaseR':
+                uniforms.phaseR.value = phaseR;
+                break;
+            case 'phaseG':
+                uniforms.phaseG.value = phaseG;
+                break;
+            case 'phaseB':
+                uniforms.phaseB.value = phaseB;
                 break;
             case 'shape':
                 uniforms.shape.value = shape;

@@ -3,13 +3,16 @@
 uniform vec3 iResolution;
 uniform float iTime;
 uniform float zoom;
+uniform float phaseR;
+uniform float phaseG;
+uniform float phaseB;
 uniform float shape;
 
 vec3 palette( in float t ) {
     vec3 a = vec3(0.500, 0.500, 0.500);
     vec3 b = vec3(0.500, 0.500, 0.500);
     vec3 c = vec3(1.000, 1.000, 1.000);
-    vec3 d = vec3(0.498, 0.268, 1.068);
+    vec3 d = vec3(phaseR, phaseG, phaseB);
 
     return a + b*cos( 6.28318*(c*t+d) );
 }
