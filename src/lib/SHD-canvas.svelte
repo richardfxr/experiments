@@ -143,7 +143,7 @@
 
 <svelte:window on:resize={resizeRenderer}/>
 
-<canvas id="canvas" bind:this={canvas}></canvas>
+<canvas id="canvas" bind:this={canvas} on:click></canvas>
 {#if !scene && !loaded}
     <div class="text">
         <h2>Loading WebGL.</h2>
@@ -175,6 +175,7 @@
         left: 0;
 
         padding: 0 15px;
+        background: linear-gradient(0deg, #b700ff, #ff6200);
 
         h2, p {
             color: white;
