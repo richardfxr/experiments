@@ -25,9 +25,6 @@
     <label for={id} class="label">
         <span><slot /></span>
     </label>
-    <!-- <p class="label outlined" aria-hidden="true">
-        <span><slot /></span>
-    </p> -->
 </div>
 
 
@@ -44,7 +41,7 @@
     .container {
         position: relative;
         height: var(--slider-height);
-        border-bottom: solid var(--border-width) #3f3f3f;
+        border-bottom: solid var(--border-width) var(--border-clr);
     }
     
     input {
@@ -70,10 +67,16 @@
         outline-offset: $_outline-offset;
 
         overflow: hidden;
-        transition: outline-color var(--trans-fast) ease;
+        transition: background-color 0.15s ease;
 
         &:focus-visible {
-            outline-color: red;
+            --_clr-thumb: black;
+
+            background-color: white;
+
+            & + label {
+                color: black;
+            }
         }
         
         &::-webkit-slider-runnable-track {
@@ -94,6 +97,8 @@
             background-color: var(--_clr-thumb);
             box-shadow: 0 0 7px var(--_clr-shadow),
                         0 0 14px 4px var(--_clr-shadow);
+
+            transition: background-color 0.15s ease;
         }
 
         &::-moz-range-track {
@@ -109,6 +114,8 @@
             border-radius: 0;
             box-shadow: 0 0 7px var(--_clr-shadow),
                         0 0 12px 3px var(--_clr-shadow);
+
+            transition: background-color 0.15s ease;
         }
     }
 
@@ -120,6 +127,8 @@
         position: absolute;
         inset: 0;
         z-index: 3;
+
+        transition: color 0.15s ease;
 
         &.outlined {
             z-index: 2;
