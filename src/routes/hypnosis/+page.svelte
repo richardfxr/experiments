@@ -41,6 +41,22 @@
 
 
 
+<svelte:head>
+    <title>Hypnosis</title>
+    <meta
+        name="description"
+        content="A customizable hypnotic animation."
+    />
+    <link rel="icon" href="SHD-favicon.png" />
+    <meta name="theme-color" content="#000000" />
+    <!-- open graph image -->
+    <meta property="og:image" content="/SHD-og-image-1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Concentric circles emerging from the center, changing color as they move further away." />
+</svelte:head>
+
 <main>
     <h1 class="visuallyHidden">Customizable hypnotic animation.</h1>
     <Canvas
