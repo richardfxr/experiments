@@ -18,9 +18,9 @@
 
 
 
-<h2 class="label">shape</h2>
+<h2 class="label" id="shapeLabel">shape</h2>
 
-<div class="shapeRadios">
+<div class="shapeRadios" role="radiogroup" aria-labelledby="shapeLabel">
     {#each shapes as iShape}
         <input
             id={"shapeRadio-" + iShape.value}

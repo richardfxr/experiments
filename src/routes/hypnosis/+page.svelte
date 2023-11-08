@@ -33,7 +33,6 @@
 
         // add a one-time transition end event listener
         controls.addEventListener("transitionend", () => {
-            console.log("transition ended");
             hideControls = false;
             controls.close();
         }, { once: true });
@@ -43,6 +42,7 @@
 
 
 <main>
+    <h1 class="visuallyHidden">Customizable hypnotic animation.</h1>
     <Canvas
         {timeScale}
         {zoom}
@@ -58,6 +58,7 @@
             controlsAreHidden = false;
             controls.showModal();
         }}>
+        <span class="visuallyHidden">open controls</span>
         <div class="sliderPreviews" role="presentation">
             <div
                 style="
@@ -109,6 +110,7 @@
         on:keyup={event => {if (event.key === "Escape") closeControlsDialog();}}>
         <form
             method="dialog"
+            aria-labelledby="controlsLabel"
             on:keydown={event => {
                 if (event.key === "Escape") {
                     event.preventDefault();
@@ -116,7 +118,7 @@
                 }
             }}>
             <div class="header">
-                <h2 class="label">controls</h2>
+                <h2 class="label" id="controlsLabel">controls</h2>
                 <button
                     class="button"
                     on:click|preventDefault={closeControlsDialog}>

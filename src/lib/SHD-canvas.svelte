@@ -41,6 +41,14 @@
     $: phaseB, updateUniform('phaseB');
     $: shape, updateUniform('shape');
 
+    /* === CONSTANTS ========================== */
+    const shapeNames = [
+        "circles",
+        "triangles",
+        "squares",
+        "pentagons"
+    ];
+
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
 
@@ -143,7 +151,13 @@
 
 <svelte:window on:resize={resizeRenderer}/>
 
-<canvas id="canvas" bind:this={canvas} on:click></canvas>
+<canvas
+    id="canvas"
+    role="img"
+    aria-label="Concentric {shapeNames[shape - 1]} {timeScale === 0 ? "centered on" : timeScale <= 3 ? "emerging slowly from" : "emerging quickly from"} the center of the screen, changing color as they move away from the center."
+    bind:this={canvas}
+    on:click>
+</canvas>
 {#if !scene && !loaded}
     <div class="text">
         <h2>Loading WebGL.</h2>
