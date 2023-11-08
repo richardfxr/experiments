@@ -1,5 +1,8 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
+    import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import Canvas from "$lib/SHD-canvas.svelte";
     import Slider from "$lib/SHD-slider.svelte";
     import ShapeRadios from "$lib/SHD-shapeRadios.svelte";
@@ -11,15 +14,47 @@
     import Pentagon from "$lib/SVGs/SHD-pentagonIcon.svelte";
 
     /* === VARIABLES ========================== */
-    let timeScale = 2;
-    let zoom = 0.5;
-    let phaseR = 0.498;
-    let phaseG = 0.268;
-    let phaseB = 0.068;
-    let shape = 1;
-
+    let loaded = false;
     let hideControls = false;
     let controlsAreHidden = false;
+
+    /* === STORES ============================= */
+    const timeScale = writable(2);
+    const zoom = writable(0.5);
+    const phaseR = writable(0.498);
+    const phaseG = writable(0.268);
+    const phaseB = writable(0.068);
+    const shape = writable(1);
+
+    timeScale.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("timeScale", value.toString());
+    });
+    
+    zoom.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("zoom", value.toString());
+    });
+    
+    phaseR.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("phaseR", value.toString());
+    });
+    
+    phaseG.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("phaseG", value.toString());
+    });
+
+    phaseB.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("phaseB", value.toString());
+    });
+
+    shape.subscribe((value) => {
+        if (!browser || !loaded) return;
+        localStorage.setItem("shape", value.toString());
+    });
 
     /* === BINDINGS =========================== */
     let controls: HTMLDialogElement;
@@ -37,6 +72,19 @@
             controls.close();
         }, { once: true });
     }
+
+    /* === LIFE CYCLES ======================== */
+    onMount(() => {
+        // load values from local storage
+		if (localStorage.timeScale) timeScale.set(Number(localStorage.timeScale));
+        if (localStorage.zoom) zoom.set(Number(localStorage.zoom));
+        if (localStorage.phaseR) phaseR.set(Number(localStorage.phaseR));
+        if (localStorage.phaseG) phaseG.set(Number(localStorage.phaseG));
+        if (localStorage.phaseB) phaseB.set(Number(localStorage.phaseB));
+        if (localStorage.shape) shape.set(Number(localStorage.shape));
+
+        loaded = true;
+	});
 </script>
 
 
@@ -60,12 +108,12 @@
 <main>
     <h1 class="visuallyHidden">Customizable hypnotic animation.</h1>
     <Canvas
-        {timeScale}
-        {zoom}
-        {phaseR}
-        {phaseG}
-        {phaseB}
-        {shape}
+        timeScale={$timeScale}
+        zoom={$zoom}
+        phaseR={$phaseR}
+        phaseG={$phaseG}
+        phaseB={$phaseB}
+        shape={$shape}
         on:click={closeControlsDialog} />
     <button
         class="controlsButton"
@@ -79,39 +127,39 @@
             <div
                 style="
                     --_clr: #fff174;
-                    --_percent: {(timeScale / 6) * 100}%;
+                    --_percent: {($timeScale / 6) * 100}%;
                 ">
             </div>
             <div
                 style="
                     --_clr: #f8a45f;
-                    --_percent: {(zoom / 1.2) * 100}%;
+                    --_percent: {($zoom / 1.2) * 100}%;
                 ">
             </div>
             <div
                 style="
                     --_clr: #ff8282;
-                    --_percent: {phaseR * 100}%;
+                    --_percent: {$phaseR * 100}%;
                 ">
             </div>
             <div
                 style="
                     --_clr: #48f348;
-                    --_percent: {phaseG * 100}%;
+                    --_percent: {$phaseG * 100}%;
                 ">
             </div>
             <div
                 style="
                     --_clr: #6161ff;
-                    --_percent: {phaseB * 100}%;
+                    --_percent: {$phaseB * 100}%;
                 ">
             </div>
         </div>
-        {#if shape === 1}
+        {#if $shape === 1}
             <Circle />
-        {:else if shape === 2}
+        {:else if $shape === 2}
             <Triangle />
-        {:else if shape === 3}
+        {:else if $shape === 3}
             <Square />
         {:else}
             <Pentagon />
@@ -144,7 +192,7 @@
             </div>
             
             <Slider
-                bind:value={timeScale}
+                bind:value={$timeScale}
                 id="timeScale"
                 min={0}
                 max={6}
@@ -154,7 +202,7 @@
                 speed
             </Slider>
             <Slider
-                bind:value={zoom}
+                bind:value={$zoom}
                 id="zoom"
                 min={0}
                 max={1.2}
@@ -164,7 +212,7 @@
                 zoom
             </Slider>
             <Slider
-                bind:value={phaseR}
+                bind:value={$phaseR}
                 id="phaseR"
                 min={0}
                 max={1}
@@ -174,7 +222,7 @@
                 red phase
             </Slider>
             <Slider
-                bind:value={phaseG}
+                bind:value={$phaseG}
                 id="phaseG"
                 min={0}
                 max={1}
@@ -184,7 +232,7 @@
                 green phase
             </Slider>
             <Slider
-                bind:value={phaseB}
+                bind:value={$phaseB}
                 id="phaseB"
                 min={0}
                 max={1}
@@ -193,19 +241,19 @@
                 shadowColor="#3b3bff">
                 blue phase
             </Slider>
-            <ShapeRadios bind:shape={shape} />
+            <ShapeRadios bind:shape={$shape} />
             <div class="actions">
                 <button
                     type="button"
                     class="button label"
                     on:click={() => {
                         // reset all values to default
-                        timeScale = 2;
-                        zoom = 0.5;
-                        phaseR = 0.498;
-                        phaseG = 0.268;
-                        phaseB = 0.068;
-                        shape = 1;
+                        timeScale.set(2);
+                        zoom.set(0.5);
+                        phaseR.set(0.498);
+                        phaseG.set(0.268);
+                        phaseB.set(0.068);
+                        shape.set(1);
                     }}>
                     <Reset />
                     <span>reset</span>
@@ -247,6 +295,10 @@
 
     *, *::before, *::after {
         font-family: 'General Sans', sans-serif;
+    }
+
+    :global(body) {
+        background-color: black;
     }
     
     main {
