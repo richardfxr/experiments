@@ -40,3 +40,9 @@ Data provided by the Government of Uganda through the [UNHCR Operational Data Po
 > Most files are available under [src\routes\scatter](https://github.com/richardfxr/misc/tree/main/src/routes/scatter) or prefixed with `SCT-` in [src\lib](https://github.com/richardfxr/misc/tree/main/src/lib).
 
 A simple page that scatters a specified number of points on the screen.
+
+## [Hypnosis](https://misc.richardfxr.com/hypnosis)
+
+> Most files are available under [src\routes\hypnosis](https://github.com/richardfxr/misc/tree/main/src/routes/hypnosis) or prefixed with `SHD-` in [src\lib](https://github.com/richardfxr/misc/tree/main/src/lib). The fragment shader can be found at [src\shaders\hypnosis.glsl](https://github.com/richardfxr/misc/blob/main/src/shaders/hypnosis.glsl)
+
+A GLSL fragment shader rendered with WebGL with a few user-adjustable parameters.
