@@ -154,7 +154,7 @@
 <canvas
     id="canvas"
     role="img"
-    aria-label="Concentric {shapeNames[shape - 1]} {timeScale === 0 ? "centered on" : timeScale <= 3 ? "emerging slowly from" : "emerging quickly from"} the center of the screen, changing color as they move away from the center."
+    aria-label="Concentric {shapeNames[shape - 1]} {timeScale === 0 ? "centered on" : timeScale <= 3 ? "emerging slowly from the center of" : "emerging quickly from the center of"} the screen, changing color as they move away from the center."
     bind:this={canvas}
     on:click>
 </canvas>
