@@ -3,16 +3,17 @@
 uniform vec3 iResolution;
 uniform float iTime;
 uniform float zoom;
-uniform float phaseR;
-uniform float phaseG;
-uniform float phaseB;
+uniform float offsetR;
+uniform float offsetG;
+uniform float offsetB;
 uniform float shape;
+uniform vec2 mousePosition;
 
 vec3 palette( in float t ) {
     vec3 a = vec3(0.500, 0.500, 0.500);
     vec3 b = vec3(0.500, 0.500, 0.500);
     vec3 c = vec3(1.000, 1.000, 1.000);
-    vec3 d = vec3(phaseR, phaseG, phaseB);
+    vec3 d = vec3(offsetR, offsetG, offsetB);
 
     return a + b*cos( 6.28318*(c*t+d) );
 }
@@ -42,7 +43,7 @@ float sdPentagon( in vec2 p, in float r ) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     // ranges from -1 to 1 for both x and y. Centered at (0, 0)
-    vec2 uv = fragCoord / iResolution.xy * 2.0 - 1.0;
+    vec2 uv = fragCoord / iResolution.xy * 2.0 - vec2(mousePosition.x * 2.0, mousePosition.y * -2.0 + 2.0);
     // adapt to aspect ratio
     if (iResolution.x > iResolution.y) {
         uv.x *= iResolution.x / iResolution.y;

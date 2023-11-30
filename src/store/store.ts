@@ -1,6 +1,5 @@
 /* === IMPORTS ============================ */
-import { browser } from '$app/environment';
-import { writable, get, type Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import type { GlobeInstance } from 'globe.gl';
 
 /* === TYPES ============================== */
