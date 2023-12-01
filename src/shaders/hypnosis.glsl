@@ -43,7 +43,7 @@ float sdPentagon( in vec2 p, in float r ) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     // ranges from -1 to 1 for both x and y. Centered at (0, 0)
-    vec2 uv = (fragCoord - mousePosition) / iResolution.xy * 2.0;
+    vec2 uv = fragCoord / iResolution.xy * 2.0 - vec2(mousePosition.x * 2.0, mousePosition.y * -2.0 + 2.0);
     // adapt to aspect ratio
     if (iResolution.x > iResolution.y) {
         uv.x *= iResolution.x / iResolution.y;

@@ -43,7 +43,7 @@
         offsetG: { value: $offsetG },
         offsetB: { value: $offsetB },
         shape: { value: $shape },
-        mousePosition: { value: new THREE.Vector2(0, 0) }
+        mousePosition: { value: new THREE.Vector2(0.5, 0.5) }
 	};
     let scaledTime = 0;
     let prevTime = 0;
@@ -161,8 +161,8 @@
     function handleMouseMove(event: MouseEvent): void {
         // update mousePosition
         uniforms.mousePosition.value.set(
-            event.offsetX,
-            size.height - event.offsetY
+            event.offsetX / size.width,
+            event.offsetY / size.height
         );
 
         if (!dragging) return;
@@ -182,8 +182,8 @@
         if (event.touches[1]) return;
         // update mousePosition
         uniforms.mousePosition.value.set(
-            event.touches[0].clientX,
-            size.height - event.touches[0].clientY
+            event.touches[0].clientX / size.width,
+            event.touches[0].clientY / size.height
         );
     }
 
@@ -242,14 +242,8 @@
         scene.add(new THREE.Mesh(plane, material));
 
         loaded = true;
+
         resizeRenderer();
-
-        // set initial mousePosition to center
-        uniforms.mousePosition.value.set(
-            size.width / 2,
-            size.height / 2
-        );
-
         requestAnimationFrame(render);
 	});
 </script>
