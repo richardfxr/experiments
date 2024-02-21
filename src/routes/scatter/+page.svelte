@@ -22,7 +22,7 @@
         { x: 50, y: 50 },
         { x: 50, y: 50 },
     ];
-    let scatterInterval: NodeJS.Timer | null = null;
+    let scatterInterval: number | null = null;
     let scatterIndex = 0;
     let scattered = false;
     let awaitingAnimation = false;
@@ -30,9 +30,12 @@
 
     /* === FUNCTIONS ========================== */
     function scatterPoint(): void {
+        let randomArr = new Uint32Array(2);
+        crypto.getRandomValues(randomArr);
+
         points[scatterIndex] = {
-            x: Math.random() * 100,
-            y: Math.random() * 100
+            x: randomArr[0] / (0xffffffff + 1) * 100,
+            y: randomArr[1] / (0xffffffff + 1) * 100
         };
 
         // force Svelte to update
