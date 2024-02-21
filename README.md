@@ -1,4 +1,4 @@
-# misc
+# experiments
 
 ## What is this?
 
