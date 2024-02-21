@@ -47,9 +47,9 @@
     };
 
     function getArcColor(country: Country, hoverCountry: Country | null) {
-        if (hoverCountry === null || country.id === hoverCountry.id) return 'rgba(235, 98, 0, 1)';
+        if (hoverCountry === null || country.id === hoverCountry.id) return 'rgba(230, 30, 0, 1)';
         
-        return 'rgba(235, 98, 0, 0.3)';
+        return 'rgba(230, 30, 0, 0.3)';
     };
 
     function setArcColors(hoverCountry: Country | null) {
