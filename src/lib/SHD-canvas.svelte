@@ -60,6 +60,16 @@
     let dragging = false;
     let hasDragged = false;
 
+    /* === LOCAL STORAGE ====================== */
+    if (browser) {
+        if (localStorage.timeScale2) timeScale.set(Number(localStorage.timeScale2));
+        if (localStorage.zoom2) zoom.set(Number(localStorage.zoom2));
+        if (localStorage.offsetR2) offsetR.set(Number(localStorage.offsetR2));
+        if (localStorage.offsetG2) offsetG.set(Number(localStorage.offsetG2));
+        if (localStorage.offsetB2) offsetB.set(Number(localStorage.offsetB2));
+        if (localStorage.shape2) shape.set(Number(localStorage.shape2));
+    }
+    
     /* === STORES ============================= */
     timeScale.subscribe((value) => {
         if (!browser) return;
@@ -208,15 +218,7 @@
     }
 
     /* === LIFECYCLE ========================== */
-    onMount(() => {
-        // local storage
-        if (localStorage.timeScale2) timeScale.set(Number(localStorage.timeScale2));
-        if (localStorage.zoom2) zoom.set(Number(localStorage.zoom2));
-        if (localStorage.offsetR2) offsetR.set(Number(localStorage.offsetR2));
-        if (localStorage.offsetG2) offsetG.set(Number(localStorage.offsetG2));
-        if (localStorage.offsetB2) offsetB.set(Number(localStorage.offsetB2));
-        if (localStorage.shape2) shape.set(Number(localStorage.shape2));
-        
+    onMount(() => {        
         // THREE
 		renderer = new THREE.WebGLRenderer({
             antialias: true,
