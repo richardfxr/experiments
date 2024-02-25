@@ -185,13 +185,13 @@
         --SCT-clr-controls-bg-active: #474747;
     }
 
-    *, *::before, *::after {
+    :global(body) {
         font-family: 'General Sans', sans-serif;
+        background-color: var(--SCT-clr-bg);
     }
 
     main {
         height: 100vh;
-        background-color: var(--SCT-clr-bg);
         overflow: hidden;
     }
 

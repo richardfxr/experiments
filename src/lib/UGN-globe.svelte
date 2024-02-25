@@ -209,7 +209,7 @@
     :global {
         body {
             // internal variables
-        --_scrollToTop-height: calc(2 * var(--_pad-xl) + 15px);
+            --_scrollToTop-height: calc(2 * var(--_pad-xl) + 15px);
         }
 
         .arcLabel {

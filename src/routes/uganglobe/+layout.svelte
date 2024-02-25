@@ -84,10 +84,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Montserrat:wght@500&display=swap');
 
     :global {
-        *, *::before, *::after {
-            font-family: 'Manrope', sans-serif;
-        }
-
         html {
             scroll-behavior: smooth;
         }
@@ -131,6 +127,7 @@
             
             --_clr-accent-700: #eb6200;
             
+            font-family: 'Manrope', sans-serif;
             background-color: var(--_clr-50);
             // prevent scrollbar from disappearing and shifting layout
             overflow-y: scroll;

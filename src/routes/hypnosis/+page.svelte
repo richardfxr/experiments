@@ -255,11 +255,8 @@
         --SHD-slider-height: 50px;
     }
 
-    *, *::before, *::after {
+    :global(body) {
         font-family: 'General Sans', sans-serif;
-    }
-
-    body {
         background-color: black;
     }
     
