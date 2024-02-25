@@ -247,6 +247,11 @@
 
         resizeRenderer();
         requestAnimationFrame(render);
+
+        return () => {
+            renderer.dispose();
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        }
 	});
 </script>
 
