@@ -39,7 +39,7 @@
 
             &.shown {
                 opacity: 1;
-                transition: opacity var(--trans-normal) var(--trans-cubic-1);
+                transition: opacity var(--SCT-trans-normal) var(--SCT-trans-cubic-1);
             }
         }
     }
