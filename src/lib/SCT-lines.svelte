@@ -32,7 +32,7 @@
         height: 100%;
 
         line {
-            stroke: var(--clr-line);
+            stroke: var(--SCT-clr-line);
             opacity: 0;
 
             transition: opacity 0s linear;

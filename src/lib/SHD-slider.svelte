@@ -33,15 +33,15 @@
     // === INTERNAL VARIABLES =====================
     $_controls-maxWidth: 400px;
     $_outline-offset: 1px;
-    $_translateY: calc(-100% + var(--border-width));
+    $_translateY: calc(-100% + var(--SHD-border-width));
     // range input
     $_track-width: 100%;
     $_thumb-width: 2px;
 
     .container {
         position: relative;
-        height: var(--slider-height);
-        border-bottom: solid var(--border-width) var(--border-clr);
+        height: var(--SHD-slider-height);
+        border-bottom: solid var(--SHD-border-width) var(--SHD-border-clr);
     }
     
     input {
@@ -63,7 +63,7 @@
 
         margin: 0;
 
-        outline: solid var(--border-thick-width) transparent;
+        outline: solid var(--SHD-border-thick-width) transparent;
         outline-offset: $_outline-offset;
 
         overflow: hidden;
@@ -92,7 +92,7 @@
             
             position: relative;
             width: $_thumb-width;
-            height: var(--slider-height);
+            height: var(--SHD-slider-height);
 
             background-color: var(--_clr-thumb);
             box-shadow: 0 0 7px var(--_clr-shadow),
@@ -108,7 +108,7 @@
 
         &::-moz-range-thumb {
             width: $_thumb-width;
-            height: var(--slider-height);
+            height: var(--SHD-slider-height);
             background-color: var(--_clr-thumb);
             border: none;
             border-radius: 0;
@@ -127,6 +127,11 @@
         position: absolute;
         inset: 0;
         z-index: 3;
+
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        text-align: center;
 
         transition: color 0.15s ease;
 

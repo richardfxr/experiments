@@ -163,43 +163,41 @@
     $_point-size: 11px;
     $_point-border-offset: -8px;
 
-    :global {
-        :root {
-            // variables
-            --border-width: 1px;
-            --border-thick-width: 2px;
-            --trans-fast: 0.15s;
-            --trans-normal: 0.2s;
-            --trans-slow: 0.25s;
-            --trans-cubic-1: cubic-bezier(0, .36, .34, 1);
-            --controls-height: 50px;
-            --controls-bottom: 10px;
+    :root {
+        // variables
+        --SCT-border-width: 1px;
+        --SCT-border-thick-width: 2px;
+        --SCT-trans-fast: 0.15s;
+        --SCT-trans-normal: 0.2s;
+        --SCT-trans-slow: 0.25s;
+        --SCT-trans-cubic-1: cubic-bezier(0, .36, .34, 1);
+        --SCT-controls-height: 50px;
+        --SCT-controls-bottom: 10px;
 
-            // colors
-            --clr-bg: #f7f5ee;
-            --clr-red: #c1272d;
-            --clr-line: #cfcfbf;
-            --clr-point-outline: #86857b;
-            --clr-controls-text: #ffffff;
-            --clr-controls-bg: #666666;
-            --clr-controls-bg-hover: #585858;
-            --clr-controls-bg-active: #474747;
-        }
+        // colors
+        --SCT-clr-bg: #f7f5ee;
+        --SCT-clr-red: #c1272d;
+        --SCT-clr-line: #cfcfbf;
+        --SCT-clr-point-outline: #86857b;
+        --SCT-clr-controls-text: #ffffff;
+        --SCT-clr-controls-bg: #666666;
+        --SCT-clr-controls-bg-hover: #585858;
+        --SCT-clr-controls-bg-active: #474747;
+    }
 
-        *, *::before, *::after {
-            font-family: 'General Sans', sans-serif;
-        }
+    *, *::before, *::after {
+        font-family: 'General Sans', sans-serif;
     }
 
     main {
         height: 100vh;
-        background-color: var(--clr-bg);
+        background-color: var(--SCT-clr-bg);
         overflow: hidden;
     }
 
     .canvas {
         position: relative;
-        height: calc(100vh - var(--controls-height) - var(--controls-bottom));
+        height: calc(100vh - var(--SCT-controls-height) - var(--SCT-controls-bottom));
         cursor: crosshair;
 
         .origin, .point {
@@ -219,20 +217,20 @@
                     content: "";
                     position: absolute;
 
-                    border: solid var(--border-width) var(--clr-controls-bg);
+                    border: solid var(--SCT-border-width) var(--SCT-clr-controls-bg);
                 }
             }
         }
 
         .origin {
-            transition: transform var(--trans-normal) var(--trans-cubic-1);
+            transition: transform var(--SCT-trans-normal) var(--SCT-trans-cubic-1);
 
             div {
                 width: $_origin-size;
                 height: $_origin-size;
 
-                background-color: var(--clr-bg);
-                border: solid var(--border-thick-width) var(--clr-red);
+                background-color: var(--SCT-clr-bg);
+                border: solid var(--SCT-border-thick-width) var(--SCT-clr-red);
                 border-radius: 1000px;
                 margin: calc(-0.5 * $_origin-size) 0 0 calc(-0.5 * $_origin-size);
 
@@ -249,8 +247,8 @@
         .point {
             opacity: 0;
 
-            transition: transform var(--trans-normal) var(--trans-cubic-1),
-                        opacity var(--trans-fast) ease-in-out;
+            transition: transform var(--SCT-trans-normal) var(--SCT-trans-cubic-1),
+                        opacity var(--SCT-trans-fast) ease-in-out;
 
             &.shown {
                 opacity: 1;
@@ -260,7 +258,7 @@
                 width: $_point-size;
                 height: $_point-size;
 
-                background-color: var(--clr-controls-bg);
+                background-color: var(--SCT-clr-controls-bg);
                 margin: calc(-0.5 * $_point-size) 0 0 calc(-0.5 * $_point-size);
 
                 &::before {
@@ -269,7 +267,7 @@
                     bottom: $_point-border-offset;
                     left: $_point-border-offset;
 
-                    border-color: var(--clr-point-outline);
+                    border-color: var(--SCT-clr-point-outline);
                 }
             }
         }

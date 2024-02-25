@@ -48,14 +48,14 @@
     // === INTERNAL VARIABLES =====================
     $_controls-maxWidth: 400px;
     $_outline-offset: 1px;
-    $_translateY: calc(-100% + var(--border-width));
+    $_translateY: calc(-100% + var(--SCT-border-width));
     // range input
     $_track-width: 100%;
     $_thumb-width: 7px;
     $_thumb-height: 7px;
     $_thumb-margin-bottom: 7px;
-    $_thumb-clip-top: calc(var(--controls-height) - ($_thumb-height + $_thumb-margin-bottom));
-    $_thumb-clip-bottom: calc(var(--controls-height) - $_thumb-margin-bottom);
+    $_thumb-clip-top: calc(var(--SCT-controls-height) - ($_thumb-height + $_thumb-margin-bottom));
+    $_thumb-clip-bottom: calc(var(--SCT-controls-height) - $_thumb-margin-bottom);
 
     .controls {
         display: flex;
@@ -64,7 +64,7 @@
         bottom: 10px;
         left: 50%;
         width: calc(100% - 20px);
-        height: var(--controls-height);
+        height: var(--SCT-controls-height);
         max-width: $_controls-maxWidth;
         z-index: 2;
 
@@ -72,23 +72,23 @@
     }
 
     button {
-        outline: solid var(--border-thick-width) transparent;
+        outline: solid var(--SCT-border-thick-width) transparent;
         outline-offset: $_outline-offset;
 
         overflow: hidden;
 
         &:hover, &:focus {
             .wrapper {
-                background-color: var(--clr-controls-bg-hover);
+                background-color: var(--SCT-clr-controls-bg-hover);
             }
         }
 
         &:active .wrapper {
-            background-color: var(--clr-controls-bg-active);
+            background-color: var(--SCT-clr-controls-bg-active);
         }
 
         &:focus-visible {
-            outline-color: var(--clr-red);
+            outline-color: var(--SCT-clr-red);
         }
 
         .wrapper {
@@ -102,12 +102,12 @@
             height: 100%;
 
             font-size: 36px;
-            color: var(--clr-controls-text);
+            color: var(--SCT-clr-controls-text);
             padding: 0 6px;
-            background-color: var(--clr-controls-bg);
+            background-color: var(--SCT-clr-controls-bg);
 
-            transition: background-color var(--trans-fast) ease-in-out;
-            animation: slideDown var(--trans-normal) var(--trans-cubic-1) 1;
+            transition: background-color var(--SCT-trans-fast) ease-in-out;
+            animation: slideDown var(--SCT-trans-normal) var(--SCT-trans-cubic-1) 1;
         }
 
         #scatter, #points {
@@ -143,15 +143,15 @@
 
         &:hover, &:focus-within {
             .blocks .block::before {
-                background-color: var(--clr-controls-bg-hover);
+                background-color: var(--SCT-clr-controls-bg-hover);
             }
         }
 
         #rangeInput {
             // internal variables
             --_margin-hrz: calc(((100% - 22px) / 12 - #{$_thumb-width}) / 2);
-            --_clr-thumb: var(--clr-controls-text);
-            --_track-height: var(--border-width);
+            --_clr-thumb: var(--SCT-clr-controls-text);
+            --_track-height: var(--SCT-border-width);
 
             // reset all styling
             -webkit-appearance: none;
@@ -168,18 +168,18 @@
             padding: 0 var(--_margin-hrz) 0 var(--_margin-hrz);
             margin: 0;
 
-            outline: solid var(--border-thick-width) transparent;
+            outline: solid var(--SCT-border-thick-width) transparent;
             outline-offset: $_outline-offset;
 
             overflow: hidden;
-            transition: opacity var(--trans-slow) var(--trans-cubic-1),
-                        outline-color var(--trans-fast) ease;
+            transition: opacity var(--SCT-trans-slow) var(--SCT-trans-cubic-1),
+                        outline-color var(--SCT-trans-fast) ease;
 
             // load state
             // opacity: 0;
 
             &:focus-visible {
-                outline-color: var(--clr-red);
+                outline-color: var(--SCT-clr-red);
             }
             
             &::-webkit-slider-runnable-track {
@@ -195,7 +195,7 @@
                 
                 position: relative;
                 width: $_thumb-width;
-                height: var(--controls-height);
+                height: var(--SCT-controls-height);
 
                 background-color: var(--_clr-thumb);
 
@@ -214,7 +214,7 @@
 
             &::-moz-range-thumb {
                 width: $_thumb-width;
-                height: var(--controls-height);
+                height: var(--SCT-controls-height);
                 background-color: var(--_clr-thumb);
                 border: none;
                 border-radius: 0;
@@ -252,26 +252,17 @@
                     right: 0;
                     bottom: 0;
                     left: 0;
-                    background-color: var(--clr-controls-bg);
+                    background-color: var(--SCT-clr-controls-bg);
 
                     transform: translateY($_translateY);
 
-                    transition: background-color var(--trans-fast) ease-in-out,
-                                transform var(--trans-normal) var(--trans-cubic-1);
+                    transition: background-color var(--SCT-trans-fast) ease-in-out,
+                                transform var(--SCT-trans-normal) var(--SCT-trans-cubic-1);
                 }
 
                 &.shown::before {
                     transform: translateY(0);
                 }
-
-                // unused load animation
-                // @for $i from 1 through 8 {
-                //     &:nth-child(#{$i})::before {
-                //         animation: slideDown var(--trans-normal) var(--trans-cubic-1) 1;
-                //         animation-fill-mode: backwards;
-                //         animation-delay: calc($i * 50ms);
-                //     }
-                // }
             }
         }
     }

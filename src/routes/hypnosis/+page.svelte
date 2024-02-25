@@ -234,7 +234,7 @@
 
 
 
-<style lang="scss" global>
+<style lang="scss">
     $_sliderPreview-width: 2px;
     $_sliderPreview-height: 7px;
     $_controls-maxWidth: 400px;
@@ -246,31 +246,25 @@
 
     :root {
         // variables
-        --border-width: 1px;
-        --border-thick-width: 2px;
-        --border-clr: rgba(255, 255, 255, 0.25);
-        --trans-fast: 0.15s;
-        --trans-normal: 0.2s;
-        --trans-slow: 0.25s;
-        --slider-height: 50px;
+        --SHD-border-width: 1px;
+        --SHD-border-thick-width: 2px;
+        --SHD-border-clr: rgba(255, 255, 255, 0.25);
+        --SHD-trans-fast: 0.15s;
+        --SHD-trans-normal: 0.2s;
+        --SHD-trans-slow: 0.25s;
+        --SHD-slider-height: 50px;
     }
 
     *, *::before, *::after {
         font-family: 'General Sans', sans-serif;
     }
 
-    :global(body) {
+    body {
         background-color: black;
     }
     
     main {
         position: relative;
-    }
-
-    #canvas {
-        height: 100vh;
-        width: 100%;
-        background-color: black;
     }
 
     .controlsButton {
@@ -343,7 +337,7 @@
 
         .sliderPreviews {
             width: 100%;
-            border-bottom: solid var(--border-width) var(--border-clr);
+            border-bottom: solid var(--SHD-border-width) var(--SHD-border-clr);
 
             transition: border-color 0.15s ease;
 
@@ -439,7 +433,7 @@
                 flex-flow: row wrap;
                 align-items: center;
                 justify-content: space-between;
-                border-bottom: solid var(--border-width) var(--border-clr);
+                border-bottom: solid var(--SHD-border-width) var(--SHD-border-clr);
 
                 h2 {
                     font-weight: 600;

@@ -42,7 +42,11 @@
 
 
 <style lang="scss">
-    h2 {
+    .label {
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        text-align: center;
         margin-top: 12px;
     }
 

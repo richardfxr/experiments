@@ -290,8 +290,13 @@
         // prevent chrome back/forward gestures
         overscroll-behavior-x: none;
     }
+
     #canvas {
         display: block;
+        height: 100vh;
+        width: 100%;
+        
+        background-color: black;
         touch-action: pinch-zoom;
     }
 
