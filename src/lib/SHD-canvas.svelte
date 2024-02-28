@@ -250,7 +250,6 @@
 
         return () => {
             renderer.dispose();
-            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         }
 	});
 </script>

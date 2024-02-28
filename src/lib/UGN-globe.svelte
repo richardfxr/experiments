@@ -142,6 +142,9 @@
         // check if full screen is allowed then check if any element is fullscreened
         allowFullscreen = document.fullscreenEnabled;
         checkFullscreen();
+
+        // resize to prevent initial load error
+        resizeGlobe();
 	});
 </script>
 
