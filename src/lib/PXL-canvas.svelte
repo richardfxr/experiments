@@ -9,6 +9,16 @@
         y: number
     };
 
+    /* === IMPORTS ============================ */
+    export let panXSensitivity: number;
+    export let panYSensitivity: number;
+    export let pinchZoomSensitivity: number;
+    export let mouseZoomCoefficient: number;
+    export let mouseZoomLimit: number;
+    export let scrollXCoefficient: number;
+    export let scrollYCoefficient: number;
+    export let zoomWithCtrl: boolean;
+
     /* === CONSTANTS ========================== */
     const ongoingPointers: Pointer[] = [];
     const imageWidth = 6;
@@ -117,6 +127,9 @@
         // update width and height
         width = container.clientWidth;
         height = container.clientHeight;
+
+        // apply transition to ensure image stays in view
+        translate(0, 0);
     }
 
     function handleEnter(event: PointerEvent): void {
@@ -148,8 +161,8 @@
                 // the point between the two pointers is dragging
                 // update translates (position)
                 translate(
-                    centerX - draggingPointer.x,
-                    centerY - draggingPointer.y
+                    panXSensitivity * (centerX - draggingPointer.x),
+                    panYSensitivity * (centerY - draggingPointer.y)
                 );
             }
 
@@ -164,7 +177,7 @@
             const currentPinchDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 
             if (previousPinchDistance >= 0) {
-                scaleOnPoint(0.23 * (currentPinchDistance - previousPinchDistance), centerX, centerY);
+                scaleOnPoint(pinchZoomSensitivity * (currentPinchDistance - previousPinchDistance), centerX, centerY);
             }
 
             previousPinchDistance = currentPinchDistance;
@@ -177,8 +190,8 @@
         ) {
             // the pointer is dragging, update translates (position)
             translate(
-                event.clientX - draggingPointer.x,
-                event.clientY - draggingPointer.y
+                panXSensitivity * (event.clientX - draggingPointer.x),
+                panYSensitivity * (event.clientY - draggingPointer.y)
             );
             draggingPointer = copyPointerEvent(event);
         }
@@ -191,8 +204,8 @@
         ) {
             // the pointer was dragging, update translates (position)
             translate(
-                event.clientX - draggingPointer.x,
-                event.clientY - draggingPointer.y
+                panXSensitivity * (event.clientX - draggingPointer.x),
+                panYSensitivity * (event.clientY - draggingPointer.y)
             );
         }
 
@@ -228,28 +241,31 @@
         // handles all mouse wheel and touchpad gestures
         event.preventDefault();
 
-        if (event.ctrlKey) {
-            // zoom with control key + mouse wheel
+        if (
+            event.ctrlKey ||
+            (!event.ctrlKey && !zoomWithCtrl)
+        ) {
+            // zoom with mouse wheel
             // or pinch zoom gesture on trackpads
             scaleOnPoint(
-                clamp(-1 * event.deltaY, -7, 7),
+                clamp(mouseZoomCoefficient * event.deltaY, -1 * mouseZoomLimit, mouseZoomLimit),
                 event.clientX,
                 event.clientY
             );
         } else if (event.altKey) {
-            // scroll wheell scrolling
+            // scroll wheel scrolling
             // or trackpad panning with two fingers
             // ALT key switches X and Y axis
             translate(
-                -1 * event.deltaY,
-                -1 * event.deltaX
+                scrollYCoefficient * event.deltaY,
+                scrollXCoefficient * event.deltaX
             );
         } else {
-            // scroll wheell scrolling
+            // scroll wheel scrolling
             // or trackpad panning with two fingers
             translate(
-                -1 * event.deltaX,
-                -1 * event.deltaY
+                scrollXCoefficient * event.deltaX,
+                scrollYCoefficient * event.deltaY
             );
         }
     }
@@ -273,14 +289,21 @@
         imageData = context.getImageData(0, 0, imageWidth, imageHeight);
         imageData.data.set(image);
         context.putImageData(imageData, 0, 0);
+
+        // create resizeObserver
+        const resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(container);
+
+        return () => {
+            // disconnect resizeObserver on destroy
+            resizeObserver.disconnect();
+        }
 	});
 </script>
 
 
 
-<svelte:window
-    on:pointermove={handleMove}
-    on:resize={handleResize}/>
+<svelte:window on:pointermove={handleMove} />
 
 <div
     class="container"
