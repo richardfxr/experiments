@@ -225,11 +225,33 @@
     }
 
     function handleWheel(event: WheelEvent): void {
-        scaleOnPoint(
-            -0.1 * event.deltaY,
-            event.clientX,
-            event.clientY
-        );
+        // handles all mouse wheel and touchpad gestures
+        event.preventDefault();
+
+        if (event.ctrlKey) {
+            // zoom with control key + mouse wheel
+            // or pinch zoom gesture on trackpads
+            scaleOnPoint(
+                clamp(-1 * event.deltaY, -7, 7),
+                event.clientX,
+                event.clientY
+            );
+        } else if (event.altKey) {
+            // scroll wheell scrolling
+            // or trackpad panning with two fingers
+            // ALT key switches X and Y axis
+            translate(
+                -1 * event.deltaY,
+                -1 * event.deltaX
+            );
+        } else {
+            // scroll wheell scrolling
+            // or trackpad panning with two fingers
+            translate(
+                -1 * event.deltaX,
+                -1 * event.deltaY
+            );
+        }
     }
 
     /* === LIFECYCLE ========================== */
