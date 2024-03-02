@@ -2,9 +2,19 @@
     /* === IMPORTS ============================ */
     import { onMount } from 'svelte';
 
+    /* === TYPES ============================== */
+    type Pointer = {
+        id: number,
+        x: number,
+        y: number
+    };
+
     /* === CONSTANTS ========================== */
-    const width = 6;
-    const height = 6;
+    const ongoingPointers: Pointer[] = [];
+    const imageWidth = 6;
+    const imageHeight = 6;
+    const scaleMin = 10;
+    const scaleMax = 100;
     const image = new Uint8ClampedArray([
         0, 0, 0, 255,
         51, 0, 0, 255,
@@ -45,25 +55,187 @@
     ]);
 
     /* === VARIABLES ========================== */
-    let dragging = false;
+    let width = 100;
+    let height = 100;
     let scale = 50;
     let translateX = 0;
     let translateY = 0;
+    let draggingPointer: Pointer | null = null;
+    let previousPinchDistance = -1;
 
     /* === BINDINGS =========================== */
+    let container: HTMLDivElement;
     let canvas: HTMLCanvasElement;
     let context: CanvasRenderingContext2D;
     let imageData: ImageData;
 
-    function handleMouseMove(event: MouseEvent): void {
-        if (!dragging) return;
-        translateX += event.movementX;
-        console.log(translateX);
-        translateY += event.movementY;
+    /* === FUNCTIONS ========================== */
+    function clamp(input: number, min: number, max: number): number {
+        return Math.min(Math.max(input, min), max);
+    }
+
+    function copyPointerEvent(pointer: PointerEvent): Pointer {
+        return {
+            id: pointer.pointerId,
+            x: pointer.clientX,
+            y: pointer.clientY,
+        };
+    }
+
+    function getPointerIndex(pointer: PointerEvent): number {
+        return ongoingPointers.findIndex(element => element.id === pointer.pointerId);
+    }
+
+    function translate(translateXDiff: number, translateYDiff: number): void {
+        translateX = clamp(
+            translateX + translateXDiff,
+            -1 * (width / 2 - 1),
+            width / 2 - 1
+        );
+        translateY = clamp(
+            translateY + translateYDiff,
+            -1 * (height / 2 - 1),
+            height / 2 - 1
+        );
+    }
+
+    function scaleOnPoint(scaleDiff: number, pointX: number, pointY: number): void {
+        const newScale = clamp(scale + scaleDiff, scaleMin, scaleMax);
+
+        // adds addtional translates so that the scale transform appear to be centered
+        // on point (pointX, pointY)
+        translate(
+            -1 * ((pointX - width / 2) - translateX) / scale * (newScale - scale),
+            -1 * ((pointY - height / 2) - translateY) / scale * (newScale - scale)
+        );
+
+        scale = newScale
+    }
+
+    /* === EVENT HANDLES ====================== */
+    function handleResize(): void {
+        // update width and height
+        width = container.clientWidth;
+        height = container.clientHeight;
+    }
+
+    function handleEnter(event: PointerEvent): void {
+        if (event.buttons !== 0) return;
+        // cancel pointer as it could still be active
+        // if pointerUp or pointerCancel was never called
+        handleCancel(event);
+    }
+
+    function handleDown(event: PointerEvent): void {
+        ongoingPointers.push(copyPointerEvent(event));
+        draggingPointer = copyPointerEvent(event);
+    }
+
+    function handleMove(event: PointerEvent): void {
+        const pointerIndex = getPointerIndex(event);
+        if (pointerIndex < 0) return;
+
+        // update pointer object in ongoingPointers
+        ongoingPointers.splice(pointerIndex, 1, copyPointerEvent(event));
+
+        if (ongoingPointers.length === 2) {
+            const distanceX = ongoingPointers[0].x - ongoingPointers[1].x;
+            const distanceY = ongoingPointers[0].y - ongoingPointers[1].y;
+            const centerX = ongoingPointers[0].x - distanceX / 2;
+            const centerY = ongoingPointers[0].y - distanceY / 2;
+
+            if (draggingPointer && draggingPointer.id === -1) {
+                // the point between the two pointers is dragging
+                // update translates (position)
+                translate(
+                    centerX - draggingPointer.x,
+                    centerY - draggingPointer.y
+                );
+            }
+
+            // update/set dragging pointer to the point between the two pointers
+            draggingPointer = {
+                id: -1,
+                x: centerX,
+                y: centerY
+            };
+
+            // two pointers are present, calculate pinch zoom gesture
+            const currentPinchDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+
+            if (previousPinchDistance >= 0) {
+                scaleOnPoint(0.23 * (currentPinchDistance - previousPinchDistance), centerX, centerY);
+            }
+
+            previousPinchDistance = currentPinchDistance;
+            return;
+        }
+
+        if (
+            draggingPointer &&
+            event.pointerId === draggingPointer.id
+        ) {
+            // the pointer is dragging, update translates (position)
+            translate(
+                event.clientX - draggingPointer.x,
+                event.clientY - draggingPointer.y
+            );
+            draggingPointer = copyPointerEvent(event);
+        }
+    }
+
+    function handleUp(event: PointerEvent): void {
+        if (
+            draggingPointer &&
+            event.pointerId === draggingPointer.id
+        ) {
+            // the pointer was dragging, update translates (position)
+            translate(
+                event.clientX - draggingPointer.x,
+                event.clientY - draggingPointer.y
+            );
+        }
+
+        handleCancel(event);
+    }
+
+    function handleCancel(event: PointerEvent): void {
+        const pointerIndex = getPointerIndex(event);
+        if (pointerIndex < 0) return;
+
+        previousPinchDistance = -1;
+        ongoingPointers.splice(pointerIndex, 1);
+
+        if (
+            draggingPointer &&
+            draggingPointer.id === -1 &&
+            ongoingPointers.length >= 1
+        ) {
+            // dragging was assigned to the point between two pointers (pinch zoom)
+            // now defaults back to the first pointer in ongoingPointers
+            draggingPointer = {...ongoingPointers[0]};
+        }
+
+        if (
+            draggingPointer &&
+            draggingPointer.id === event.pointerId
+        ) {
+            draggingPointer = null;
+        }
+    }
+
+    function handleWheel(event: WheelEvent): void {
+        scaleOnPoint(
+            -0.1 * event.deltaY,
+            event.clientX,
+            event.clientY
+        );
     }
 
     /* === LIFECYCLE ========================== */
     onMount(() => {
+        handleResize();
+
         // get 2D context
         const tempContext = canvas.getContext("2d");
         if (!tempContext) {
@@ -74,9 +246,9 @@
         }
 
         // get and load imageData
-        canvas.height = height;
-        canvas.width = width;
-        imageData = context.getImageData(0, 0, width, height);
+        canvas.height = imageHeight;
+        canvas.width = imageWidth;
+        imageData = context.getImageData(0, 0, imageWidth, imageHeight);
         imageData.data.set(image);
         context.putImageData(imageData, 0, 0);
 	});
@@ -84,27 +256,21 @@
 
 
 
-<svelte:window on:mousemove={handleMouseMove} />
+<svelte:window
+    on:pointermove={handleMove}
+    on:resize={handleResize}/>
 
 <div
     class="container"
-    on:wheel={event => scale -= 0.1 * event.deltaY}
-    on:mousedown={event => {
-        if (event.button === 0) dragging = true;
-    }}
-    on:mouseup={event => {
-        if (event.button === 0) dragging = false;
-    }}
-    on:mouseenter={event => {
-        if (event.buttons === 1) {
-            dragging = true;
-        } else {
-            dragging = false;
-        }
-    }}>
+    bind:this={container}
+    on:wheel={handleWheel}
+    on:pointerenter={handleEnter}
+    on:pointerdown={handleDown}
+    on:pointerup={handleUp}
+    on:pointercancel={handleCancel}>
     <div
         class="scalor"
-        style="transform: scale({scale}) translate({translateX / scale}px, {translateY / scale}px)">
+        style="transform: scale({scale}) translate({translateX / scale}px, {translateY / scale}px);">
         <canvas bind:this={canvas}></canvas>
     </div>
 </div>
@@ -112,26 +278,27 @@
 
 
 <style lang="scss">
+    :global(body) {
+        touch-action: none;
+    }
+
     .container {
         display: flex;
+        flex-flow: row nowrap;
         align-items: center;
         justify-content: center;
         width: 100%;
         height: 100vh;
+        // height: 100svh;
         overflow: hidden;
     }
 
     .scalor {
-        width: 6px;
-        height: 6px;
-        transform: scale(50);
         transform-origin: center;
         image-rendering: pixelated;
     }
 
     canvas {
         display: block;
-
-        touch-action: none;
     }
 </style>
