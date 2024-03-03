@@ -9,7 +9,7 @@
         y: number
     };
 
-    /* === IMPORTS ============================ */
+    /* === PROPS ============================== */
     export let panXSensitivity: number;
     export let panYSensitivity: number;
     export let pinchZoomSensitivity: number;
@@ -140,6 +140,7 @@
     }
 
     function handleDown(event: PointerEvent): void {
+        // add poiner to ongoingPointers and set draggingPointer
         ongoingPointers.push(copyPointerEvent(event));
         draggingPointer = copyPointerEvent(event);
     }
@@ -152,6 +153,8 @@
         ongoingPointers.splice(pointerIndex, 1, copyPointerEvent(event));
 
         if (ongoingPointers.length === 2) {
+            // two pointers are present, starting pinch zoom gesture
+            // calculate the distance between them and the center point
             const distanceX = ongoingPointers[0].x - ongoingPointers[1].x;
             const distanceY = ongoingPointers[0].y - ongoingPointers[1].y;
             const centerX = ongoingPointers[0].x - distanceX / 2;
@@ -173,7 +176,6 @@
                 y: centerY
             };
 
-            // two pointers are present, calculate pinch zoom gesture
             const currentPinchDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 
             if (previousPinchDistance >= 0) {
@@ -238,7 +240,7 @@
     }
 
     function handleWheel(event: WheelEvent): void {
-        // handles all mouse wheel and touchpad gestures
+        // handles all mouse wheel and trackpad gestures
         event.preventDefault();
 
         if (
@@ -323,10 +325,6 @@
 
 
 <style lang="scss">
-    :global(body) {
-        touch-action: none;
-    }
-
     .container {
         display: flex;
         flex-flow: row nowrap;
@@ -334,7 +332,8 @@
         justify-content: center;
         width: 100%;
         height: 100vh;
-        // height: 100svh;
+
+        touch-action: none;
         overflow: hidden;
     }
 
