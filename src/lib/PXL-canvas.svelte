@@ -264,8 +264,8 @@
             // or trackpad panning with two fingers
             // ALT key switches X and Y axis
             translate(
-                scrollYCoefficient * event.deltaY,
-                scrollXCoefficient * event.deltaX
+                scrollXCoefficient * event.deltaY,
+                scrollYCoefficient * event.deltaX
             );
         } else {
             // scroll wheel scrolling
