@@ -1,5 +1,6 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
+    import { onDestroy } from 'svelte';
     import { writable } from 'svelte/store';
     // components
     import Canvas from "$lib/PXL-canvas.svelte";
@@ -31,30 +32,30 @@
     let hasInteracted = false;
 
     /* === SUBSCRIPTIONS ====================== */
-    showControls.subscribe((show) => {
+    const showControlsUnsub = showControls.subscribe((show) => {
         if (show) hasInteracted = true;
     });
 
-    lockPan.subscribe((lock) => {
+    const lockPanUnsub = lockPan.subscribe((lock) => {
         if (lock && $panXSensitivity !== $panYSensitivity) {
             // sync both axes
             panYSensitivity.set($panXSensitivity);
         }   
     });
 
-    panXSensitivity.subscribe((value) => {
+    const panXSensitivityUnsub = panXSensitivity.subscribe((value) => {
         if ($lockPan && value !== $panYSensitivity) {
             panYSensitivity.set(value);
         }
     });
 
-    panYSensitivity.subscribe((value) => {
+    const panYSensitivityUnsub = panYSensitivity.subscribe((value) => {
         if ($lockPan && value !== $panXSensitivity) {
             panXSensitivity.set(value);
         }
     });
 
-    lockScroll.subscribe((lock) => {
+    const lockScrollUnsub = lockScroll.subscribe((lock) => {
         if (lock && $scrollXSensitivity !== $scrollYSensitivity) {
             // sync sensitivity for both axes
             scrollYSensitivity.set($scrollXSensitivity);
@@ -65,28 +66,41 @@
         }
     });
 
-    scrollXSensitivity.subscribe((value) => {
+    const scrollXSensitivityUnsub = scrollXSensitivity.subscribe((value) => {
         if ($lockScroll && value !== $scrollYSensitivity) {
             scrollYSensitivity.set(value);
         }
     });
 
-    scrollXDirection.subscribe((direction) => {
+    const scrollXDirectionUnsub = scrollXDirection.subscribe((direction) => {
         if ($lockScroll && direction !== $scrollYDirection) {
             scrollYDirection.set(direction);
         }
     });
 
-    scrollYSensitivity.subscribe((value) => {
+    const scrollYSensitivityUnsub = scrollYSensitivity.subscribe((value) => {
         if ($lockScroll && value !== $scrollXSensitivity) {
             scrollXSensitivity.set(value);
         }
     });
 
-    scrollYDirection.subscribe((direction) => {
+    const scrollYDirectionUnsub = scrollYDirection.subscribe((direction) => {
         if ($lockScroll && direction !== $scrollXDirection) {
             scrollXDirection.set(direction);
         }
+    });
+
+    /* === LIFECYCLE ========================== */
+    onDestroy(() => {
+        showControlsUnsub();
+        lockPanUnsub();
+        panXSensitivityUnsub();
+        panYSensitivityUnsub();
+        lockScrollUnsub();
+        scrollXSensitivityUnsub();
+        scrollXDirectionUnsub();
+        scrollYSensitivityUnsub();
+        scrollYDirectionUnsub();
     });
 </script>
 
