@@ -2,6 +2,7 @@
     /* === IMPORTS ============================ */
     import { onDestroy } from 'svelte';
     import { writable } from 'svelte/store';
+    import { browser } from '$app/environment';
     // components
     import Canvas from "$lib/PXL-canvas.svelte";
     import Checkbox from "$lib/PXL-checkbox.svelte";
@@ -31,31 +32,76 @@
     /* === VARIABLES ========================== */
     let hasInteracted = false;
 
+    /* === LOCAL STORAGE ====================== */
+    if (browser) {
+        if (localStorage.lockPan) lockPan.set(localStorage.lockPan === 'true');
+        if (localStorage.panXSensitivity) panXSensitivity.set(Number(localStorage.panXSensitivity));
+        if (localStorage.panYSensitivity) panYSensitivity.set(Number(localStorage.panYSensitivity));
+        if (localStorage.pinchZoomSensitivity) pinchZoomSensitivity.set(Number(localStorage.pinchZoomSensitivity));
+        if (localStorage.mouseZoomSensitivity) mouseZoomSensitivity.set(Number(localStorage.mouseZoomSensitivity));
+        if (localStorage.mouseZoomDirection) mouseZoomDirection.set(localStorage.mouseZoomDirection === 'true');
+        if (localStorage.mouseZoomLimit) mouseZoomLimit.set(Number(localStorage.mouseZoomLimit));
+        if (localStorage.lockScroll) lockScroll.set(localStorage.lockScroll === 'true');
+        if (localStorage.scrollXSensitivity) scrollXSensitivity.set(Number(localStorage.scrollXSensitivity));
+        if (localStorage.scrollXDirection) scrollXDirection.set(localStorage.scrollXDirection === 'true');
+        if (localStorage.scrollYSensitivity) scrollYSensitivity.set(Number(localStorage.scrollYSensitivity));
+        if (localStorage.scrollYDirection) scrollYDirection.set(localStorage.scrollYDirection === 'true');
+        if (localStorage.zoomWithCtrl) zoomWithCtrl.set(localStorage.zoomWithCtrl === 'true');
+    }
+
     /* === SUBSCRIPTIONS ====================== */
     const showControlsUnsub = showControls.subscribe((show) => {
+        if (!browser) return;
         if (show) hasInteracted = true;
     });
 
     const lockPanUnsub = lockPan.subscribe((lock) => {
+        if (!browser) return;
         if (lock && $panXSensitivity !== $panYSensitivity) {
             // sync both axes
             panYSensitivity.set($panXSensitivity);
-        }   
+        }
+        localStorage.setItem('lockPan', lock.toString());
     });
 
     const panXSensitivityUnsub = panXSensitivity.subscribe((value) => {
+        if (!browser) return;
         if ($lockPan && value !== $panYSensitivity) {
             panYSensitivity.set(value);
         }
+        localStorage.setItem('panXSensitivity', value.toString());
     });
 
     const panYSensitivityUnsub = panYSensitivity.subscribe((value) => {
+        if (!browser) return;
         if ($lockPan && value !== $panXSensitivity) {
             panXSensitivity.set(value);
         }
+        localStorage.setItem('panYSensitivity', value.toString());
+    });
+
+    const pinchZoomSensitivityUnsub = pinchZoomSensitivity.subscribe((value) => {
+        if (!browser) return;
+        localStorage.setItem('pinchZoomSensitivity', value.toString());
+    });
+
+    const mouseZoomSensitivityUnsub = mouseZoomSensitivity.subscribe((value) => {
+        if (!browser) return;
+        localStorage.setItem('mouseZoomSensitivity', value.toString());
+    });
+
+    const mouseZoomDirectionUnsub = mouseZoomDirection.subscribe((direction) => {
+        if (!browser) return;
+        localStorage.setItem('mouseZoomDirection', direction.toString());
+    });
+
+    const mouseZoomLimitUnsub = mouseZoomLimit.subscribe((value) => {
+        if (!browser) return;
+        localStorage.setItem('mouseZoomLimit', value.toString());
     });
 
     const lockScrollUnsub = lockScroll.subscribe((lock) => {
+        if (!browser) return;
         if (lock && $scrollXSensitivity !== $scrollYSensitivity) {
             // sync sensitivity for both axes
             scrollYSensitivity.set($scrollXSensitivity);
@@ -64,30 +110,44 @@
             // sync direction for both axes
             scrollYDirection.set($scrollXDirection);
         }
+        localStorage.setItem('lockScroll', lock.toString());
     });
 
     const scrollXSensitivityUnsub = scrollXSensitivity.subscribe((value) => {
+        if (!browser) return;
         if ($lockScroll && value !== $scrollYSensitivity) {
             scrollYSensitivity.set(value);
         }
+        localStorage.setItem('scrollXSensitivity', value.toString());
     });
 
     const scrollXDirectionUnsub = scrollXDirection.subscribe((direction) => {
+        if (!browser) return;
         if ($lockScroll && direction !== $scrollYDirection) {
             scrollYDirection.set(direction);
         }
+        localStorage.setItem('scrollXDirection', direction.toString());
     });
 
     const scrollYSensitivityUnsub = scrollYSensitivity.subscribe((value) => {
+        if (!browser) return;
         if ($lockScroll && value !== $scrollXSensitivity) {
             scrollXSensitivity.set(value);
         }
+        localStorage.setItem('scrollYSensitivity', value.toString());
     });
 
     const scrollYDirectionUnsub = scrollYDirection.subscribe((direction) => {
+        if (!browser) return;
         if ($lockScroll && direction !== $scrollXDirection) {
             scrollXDirection.set(direction);
         }
+        localStorage.setItem('scrollYDirection', direction.toString());
+    });
+
+    const zoomWithCtrlUnsub = zoomWithCtrl.subscribe((value) => {
+        if (!browser) return;
+        localStorage.setItem('zoomWithCtrl', value.toString());
     });
 
     /* === LIFECYCLE ========================== */
@@ -96,11 +156,16 @@
         lockPanUnsub();
         panXSensitivityUnsub();
         panYSensitivityUnsub();
+        pinchZoomSensitivityUnsub();
+        mouseZoomSensitivityUnsub();
+        mouseZoomDirectionUnsub();
+        mouseZoomLimitUnsub();
         lockScrollUnsub();
         scrollXSensitivityUnsub();
         scrollXDirectionUnsub();
         scrollYSensitivityUnsub();
         scrollYDirectionUnsub();
+        zoomWithCtrlUnsub();
     });
 </script>
 
