@@ -1,5 +1,6 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
+    import { browser } from '$app/environment';
     import Cross from "$lib/SVGs/PXL-cross.svelte";
     import LockInput from '$lib/PXL-lockInput.svelte';
     import Slider from '$lib/PXL-slider.svelte';
@@ -21,6 +22,24 @@
     export let scrollXDirection: boolean; // bind
     export let scrollYSensitivity: number; // bind
     export let scrollYDirection: boolean; // bind
+
+    /* === FUNCTIONS ========================== */
+    function reset(): void {
+        if (!browser) return;
+        lockPan = false;
+        panXSensitivity = 1;
+        panYSensitivity = 1;
+        pinchZoomSensitivity = 0.23;
+        mouseZoomSensitivity = 1;
+        mouseZoomDirection = false;
+        mouseZoomLimit = 7;
+        lockScroll = false;
+        scrollXSensitivity = 1;
+        scrollXDirection = false;
+        scrollYSensitivity = 1;
+        scrollYDirection = false;
+        zoomWithCtrl = true;
+    }
 </script>
 
 
@@ -162,7 +181,10 @@
 
     <div class="group">
         <div class="widthContainer">
-            <button type="button" class="iconButton large">
+            <button
+                type="button"
+                class="iconButton large"
+                on:click={reset}>
                 <Reset />
                 Reset values
             </button>
