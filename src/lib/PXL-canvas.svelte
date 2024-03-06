@@ -10,6 +10,7 @@
     };
 
     /* === PROPS ============================== */
+    export let hasInteracted: boolean; // bind
     export let panXSensitivity: number;
     export let panYSensitivity: number;
     export let pinchZoomSensitivity: number;
@@ -140,6 +141,8 @@
     }
 
     function handleDown(event: PointerEvent): void {
+        hasInteracted = true;
+
         // add poiner to ongoingPointers and set draggingPointer
         ongoingPointers.push(copyPointerEvent(event));
         draggingPointer = copyPointerEvent(event);
@@ -242,6 +245,8 @@
     function handleWheel(event: WheelEvent): void {
         // handles all mouse wheel and trackpad gestures
         event.preventDefault();
+
+        hasInteracted = true;
 
         if (
             event.ctrlKey ||

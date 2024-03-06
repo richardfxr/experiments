@@ -1,12 +1,18 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
     import { writable } from 'svelte/store';
+    // components
     import Canvas from "$lib/PXL-canvas.svelte";
     import Checkbox from "$lib/PXL-checkbox.svelte";
-    import Settings from '$lib/SVGs/PXL-settings.svelte';
     import Controls from "$lib/PXL-controls.svelte";
+    // SVGs
+    import Mouse from '$lib/SVGs/PXL-mouse.svelte';
+    import Trackpad from '$lib/SVGs/PXL-trackpad.svelte';
+    import Hand from '$lib/SVGs/PXL-hand.svelte';
+    import Settings from '$lib/SVGs/PXL-settings.svelte';
 
     /* === STORES ============================= */
+    const showControls = writable(false);
     const lockPan = writable(false);
     const panXSensitivity = writable(1);
     const panYSensitivity = writable(1);
@@ -22,9 +28,13 @@
     const zoomWithCtrl = writable(true);
 
     /* === VARIABLES ========================== */
-    let showControls = false;
+    let hasInteracted = false;
 
     /* === SUBSCRIPTIONS ====================== */
+    showControls.subscribe((show) => {
+        if (show) hasInteracted = true;
+    });
+
     lockPan.subscribe((lock) => {
         if (lock && $panXSensitivity !== $panYSensitivity) {
             // sync both axes
@@ -83,7 +93,23 @@
 
 
 <main>
+    <h1 class="visuallyHidden">Pixel Viewer</h1>
+
+    {#if !hasInteracted}
+        <div class="hint">
+            <div>
+                <p>Interact using:</p>
+                <ul>
+                    <li><Mouse /></li>
+                    <li><Trackpad /></li>
+                    <li><Hand /></li>
+                </ul>
+            </div>
+        </div>
+    {/if}
+
     <Canvas
+        bind:hasInteracted={hasInteracted}
         panXSensitivity={$panXSensitivity}
         panYSensitivity={$panYSensitivity}
         pinchZoomSensitivity={$pinchZoomSensitivity}
@@ -95,14 +121,14 @@
 
     <Checkbox
         id="controlsInput"
-        bind:value={showControls}>
+        bind:value={$showControls}>
         <Settings />
         show controls
     </Checkbox>
     
-    {#if showControls}
+    {#if $showControls}
         <Controls
-            bind:showControls={showControls}
+            bind:showControls={$showControls}
             bind:lockPan={$lockPan}
             bind:panXSensitivity={$panXSensitivity}
             bind:panYSensitivity={$panYSensitivity}
@@ -181,8 +207,35 @@
         flex-flow: row nowrap;
         align-items: stretch;
 
-        .viewArea {
-            flex-grow: 1;
+        .hint {
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            right: 0;
+            bottom: 20px;
+            left: 0;
+            z-index: 2;
+
+            pointer-events: none;
+
+            & > div {
+                display: flex;
+                flex-flow: row wrap;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+
+                padding: var(--PXL-input-pad-vrt) var(--PXL-controls-pad-hrz);
+                border: solid 1px var(--PXL-clr-border);
+                margin: 0 10px;
+                background-color: var(--PXL-clr-bg);
+            }
+
+            ul {
+                display: flex;
+                flex-flow: row nowrap;
+                gap: 10px;
+            }
         }
 
         :global {

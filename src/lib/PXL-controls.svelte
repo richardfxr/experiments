@@ -246,6 +246,7 @@
             left: 0;
             width: 100%;
             height: unset;
+            z-index: 3;
         }
     }
 </style>
