@@ -171,6 +171,22 @@
 
 
 
+<svelte:head>
+    <title>Pixel Viewer</title>
+    <meta
+        name="description"
+        content="An image viewer with customizable mouse, trackpad, and touch interactions."
+    />
+    <link rel="icon" href="PXL-favicon.png" />
+    <meta name="theme-color" content="#ffffff" />
+    <!-- open graph image -->
+    <meta property="og:image" content="/PXL-og-image-1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A square grid of six by six pixels fading from black to yellow." />
+</svelte:head>
+
 <main>
     <h1 class="visuallyHidden">Pixel Viewer</h1>
 
