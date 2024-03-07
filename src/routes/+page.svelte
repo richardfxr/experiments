@@ -81,6 +81,18 @@
         <li>
             <a
                 data-sveltekit-reload
+                href="/pixel-viewer">
+                <h2>Pixel Viewer</h2>
+                <p>An image viewer with customizable mouse, trackpad, and touch interactions.</p>
+                <Image
+                    src="/images/index/PXL-thumbnail"
+                    alt="A square grid of six by six pixels fading from black to yellow." />
+            </a>
+        </li>
+
+        <li>
+            <a
+                data-sveltekit-reload
                 href="/hypnosis">
                 <h2>Hypnosis</h2>
                 <p>An interactive GLSL fragment shader rendered with WebGL.</p>
