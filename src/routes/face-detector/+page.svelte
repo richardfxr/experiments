@@ -12,16 +12,35 @@
     let context: CanvasRenderingContext2D;
     let video: HTMLVideoElement;
 
+    /* === TYPES ============================== */
+    type State =
+        "loading"
+        | "noContext" // cannot get 2D canvas context
+        | "modelError" // cannot load face detection model
+        | "ready"
+        | "active";
+    type Size = {
+        width: number | null;
+        height: number | null
+    };
+    type Rectangle = {
+        originX: number;
+        originY: number;
+        width: number;
+        height: number;
+        rotation: number;
+    };
+
     /* === VARIABLES ========================== */
-    let state = "loading";
+    let state: State = "loading";
     let faceDetector: FaceDetector;
     let supportsGetUserMedia = false;
-    let videoSize: { width: number | null; height: number | null } = {
+    let videoSize: Size = {
         width: null,
         height: null
     };
     let videoPrevTime = -1;
-    let canvasRatio: { width: number | null; height: number | null } = {
+    let canvasRatio: Size = {
         width: null,
         height: null
     }
@@ -41,6 +60,39 @@
         // update canvas ratio
         canvasRatio.width = canvas.width / videoSize.width;
         canvasRatio.height = canvas.height / videoSize.height;
+    }
+
+    function drawRectangle(rectangle: Rectangle): void {
+        if (!canvasRatio.width ||  !canvasRatio.height) return;
+
+        context.save();
+        if (
+            rectangle.rotation !== 0 &&
+            rectangle.rotation !== Math.PI
+        ) {
+            // rotate canvas context
+            const centerX = (
+                rectangle.originX + rectangle.width / 2
+            ) * canvasRatio.width;
+            const centerY = (
+                rectangle.originY + rectangle.height / 2
+            ) * canvasRatio.height;
+
+            context.translate(centerX, centerY);
+            context.rotate(rectangle.rotation);
+            context.translate(-centerX, -centerY);
+        }
+
+        // draw rectangle
+        context.fillStyle = "#ffffff";
+        context.fillRect(
+            rectangle.originX * canvasRatio.width,
+            rectangle.originY * canvasRatio.height,
+            rectangle.width * canvasRatio.width,
+            rectangle.height * canvasRatio.height
+        );
+
+        context.restore();
     }
 
     async function enableWebcam(): Promise<void> {
@@ -91,47 +143,25 @@
                 canvasRatio.height === null
             ) return;
 
-            // get head rotation
+            // get both eyes
             const leftEye = detection.keypoints[0];
             const rightEye = detection.keypoints[1];
             if (!leftEye || !rightEye) return;
+
+            // set up values for drawing
             const flippedRotation = Math.PI - Math.atan2(
                 rightEye.y - leftEye.y,
                 rightEye.x - leftEye.x
             );
-
-            // set up values for drawing
             const flippedX = videoSize.width - detection.boundingBox.originX - detection.boundingBox.width;
-            context.fillStyle = "#ffffff";
 
-            if (flippedRotation === 0 || flippedRotation === Math.PI) {
-                // no rotation, simply draw rectangle
-                context.fillRect(
-                    flippedX * canvasRatio.width,
-                    detection.boundingBox.originY * canvasRatio.height,
-                    detection.boundingBox.width * canvasRatio.width,
-                    detection.boundingBox.height * canvasRatio.height
-                );
-            } else {
-                // rotate the draw rectangle
-                context.save();
-                context.translate(
-                    (flippedX + detection.boundingBox.width / 2) * canvasRatio.width,
-                    (detection.boundingBox.originY + detection.boundingBox.height / 2) * canvasRatio.height
-                );
-                context.rotate(flippedRotation);
-                context.translate(
-                    -(flippedX + detection.boundingBox.width / 2) * canvasRatio.width,
-                    -(detection.boundingBox.originY + detection.boundingBox.height / 2) * canvasRatio.height
-                );
-                context.fillRect(
-                    flippedX * canvasRatio.width,
-                    detection.boundingBox.originY * canvasRatio.height,
-                    detection.boundingBox.width * canvasRatio.width,
-                    detection.boundingBox.height * canvasRatio.height
-                );
-                context.restore();
-            }
+            drawRectangle({
+                originX: flippedX,
+                originY: detection.boundingBox.originY,
+                width: detection.boundingBox.width,
+                height: detection.boundingBox.height,
+                rotation: flippedRotation
+            });
         });
 
         window.requestAnimationFrame(predictWebcam);
