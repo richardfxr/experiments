@@ -1,3 +1,14 @@
+<script lang="ts" context="module">
+    /* === TYPES ============================== */
+    export type State =
+        "loading" |
+        "noWebcam" |
+        "noContext" | // cannot get 2D canvas context
+        "modelError" | // cannot load face detection model
+        "ready" |
+        "active";
+</script>
+
 <script lang="ts">
     /* === IMPORTS ============================ */
     import { onMount } from 'svelte';
@@ -6,6 +17,7 @@
         FilesetResolver,
         FaceDetector,
     } from '@mediapipe/tasks-vision';
+    import MainIllus from '$lib/SVGs/FCE-mainIllus.svelte';
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
@@ -13,12 +25,6 @@
     let video: HTMLVideoElement;
 
     /* === TYPES ============================== */
-    type State =
-        "loading"
-        | "noContext" // cannot get 2D canvas context
-        | "modelError" // cannot load face detection model
-        | "ready"
-        | "active";
     type Size = {
         width: number | null;
         height: number | null
@@ -53,9 +59,20 @@
         height: null
     }
     let rectangles: Rectangle[] = [];
-    let confidence: number[] = [];
+    let numFaces: number = 0;
 
     /* === FUNCTIONS ========================== */
+    function drawCanvasBackground(): void {
+        if (!context) return;
+
+        context.fillStyle = `hsl(
+            ${backgroundHue},
+            ${backgroundSaturation}%,
+            ${backgroundLightness}%
+        )`;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
     function handleResize(): void {
         // get device pixel ratio
         const scale = window.devicePixelRatio;
@@ -63,6 +80,7 @@
         // update canvas size
         canvas.width = Math.floor(canvas.clientWidth * scale);
         canvas.height = Math.floor(canvas.clientHeight * scale);
+        drawCanvasBackground();
 
         if (videoSize.width === null || videoSize.height === null) return;
 
@@ -124,14 +142,7 @@
 
         // clear canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // draw background
-        context.fillStyle = `hsl(
-            ${backgroundHue},
-            ${backgroundSaturation}%,
-            ${backgroundLightness}%
-        )`;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        drawCanvasBackground();
 
         let firstValidRectangle = 0;
         // draw all existing rectangles
@@ -150,14 +161,12 @@
             rectangles = rectangles.slice(firstValidRectangle);
 
         if (videoSize.width === null) return;
-        confidence = [];
+        numFaces = detections.length;
 
         // go through new detections from this frame
         for(let i = 0; i < detections.length; i++) {
             const detection = detections[i];
             if (!detection.boundingBox) return;
-
-            confidence.push(Math.round(detection.categories[0].score * 100));
 
             // get both eyes
             const leftEye = detection.keypoints[0];
@@ -239,14 +248,7 @@
             return;
         }
         context = tempContext;
-
-        // draw background
-        context.fillStyle = `hsl(
-            ${backgroundHue},
-            ${backgroundSaturation}%,
-            ${backgroundLightness}%
-        )`;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        drawCanvasBackground();
 
         try {
             // load Mediapipe WASM
@@ -271,7 +273,10 @@
         // check getUserMedia support
         supportsGetUserMedia = !!navigator.mediaDevices?.getUserMedia;
 
-        state = "ready";
+        if (supportsGetUserMedia)
+            state = "ready";
+        else
+            state = "noWebcam";
     });
 </script>
 
@@ -279,23 +284,52 @@
 
 <svelte:window on:resize={handleResize}/>
 
-<main>
-    {#if state === "ready"}
-        {#if supportsGetUserMedia}
-            <button
-                on:click={enableWebcam}>
-                enable webcam
-            </button>
-        {:else}
-            <p>Your browser does not support the use of webcams. Please try a different browser or device.</p>
-        {/if}
-    {:else if state === "noContext"}
-        <p>Failed to get canvas context. Please reload.</p>
-    {:else if state === "modelError"}
-        <p>Failed to load face detection model. Please reload.</p>
-    {:else if state === "loading"}
-        <p>loading...</p>
-    {/if}
+<main class={state}>
+    <div class="wrapper">
+        <div class="ui">
+            {#if state === "active"}
+                <div class="controls">
+                    <button
+                        class="button"
+                        on:click>
+                        <div class="square"></div>
+                        Stop
+                    </button>
+                    <p>{numFaces.toString()} {numFaces === 1 ? 'face' : 'faces'}</p>
+                </div>
+            {:else}
+                <MainIllus {state} />
+                <div class="h1Container">
+                    <h1>
+                        {#if state === "ready"}
+                            Face Draw
+                        {:else if state === "loading"}
+                            Loading
+                        {:else}
+                            Error
+                        {/if}
+                    </h1>
+                </div>
+                
+
+                {#if state === "ready"}
+                    <p>This experiment uses a Google MediaPipe model for face detection. Input data is processed locally. No data is shared.</p>
+                    <button
+                        class="button"
+                        on:click={enableWebcam}>
+                        <div class="circle"></div>
+                        Enable camera
+                    </button>
+                {:else if state === "noWebcam"}
+                    <p>Failed to access camera. Please reload. If the issue persists, try a different browser or device.</p>
+                {:else if state === "noContext"}
+                    <p>Failed to load canvas context. Please reload. If the issue persists, try a different browser.</p>
+                {:else if state === "modelError"}
+                    <p>Failed to load face detection model. Please reload. If the issue persists, try a different browser.</p>
+                {/if}
+            {/if}
+        </div>
+    </div>
 
     <canvas bind:this={canvas}></canvas>
 
@@ -307,12 +341,141 @@
 
 
 <style lang="scss">
+    :root {
+        --FCE-clr-1000: #ffffff;
+        --FCE-clr-800: #ffe6cc;
+        --FCE-clr-600: #eb9e4e;
+        --FCE-clr-300: #452300;
+        --FCE-clr-200: #311c08;
+        --FCE-clr-bg: #e07100;
+        --FCE-border-width: 1px;
+    }
+
+    main {
+        position: relative;
+
+        font-family: 'General Sans', sans-serif;
+        background-color: var(--FCE-clr-bg);
+
+        &.active {
+            .wrapper {
+                justify-content: flex-start;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            .ui {
+                .controls {
+                    display: flex;
+                    flex-flow: row wrap;
+                    background-color: var(--FCE-clr-bg);
+
+                    .button {
+                        gap: 8px;
+                        width: auto;
+                        font-size: 1rem;
+                        padding: 8px 17px;
+                        margin-top: 0;
+                    }
+
+                    p {
+                        flex-grow: 1;
+                        display: flex;
+                        align-items: center;
+
+                        padding: 8px 17px;
+                        border: solid var(--FCE-border-width) var(--FCE-clr-600);
+                        margin-top: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    .wrapper {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        min-height: 100vh;
+
+        padding: 20px 0;
+        background-color: var(--FCE-clr-bg);
+    }
+
+    .ui {
+        width: 50%;
+        max-width: 500px;
+
+        .h1Container {
+            display: flex;
+            justify-content: center;
+            border: solid var(--FCE-border-width) var(--FCE-clr-600);
+            background-image: radial-gradient(circle at 4px 5px, var(--FCE-clr-600) 1px, transparent 0);
+            background-size: 10px 10px;
+            margin-top: 10px;
+            
+            h1 {
+                font-size: 1.4rem;
+                font-weight: 500;
+                color: var(--FCE-clr-1000);
+                padding: 7px 15px;
+                background-color: var(--FCE-clr-bg);
+                border-right: solid var(--FCE-border-width) var(--FCE-clr-600);
+                border-left: solid var(--FCE-border-width) var(--FCE-clr-600);
+            }
+        }
+
+        p {
+            color: var(--FCE-clr-1000);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.3em;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+
+            color: var(--FCE-clr-300);
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px 25px;
+            background-color: var(--FCE-clr-800);
+            margin-top: 20px;
+
+            .circle, .square {
+                background-color: var(--FCE-clr-300);
+            }
+
+            .square {
+                width: 12px;
+                height: 12px;
+            }
+
+            .circle {
+                width: 14px;
+                height: 14px;
+                border-radius: 30px;
+            }
+        }
+    }
+
     canvas {
         display: block;
         width: 100%;
         height: 100vh;
-
-        background-color: #e07100;
     }
 
     .webcamView {
@@ -327,17 +490,30 @@
             left: 0;
             z-index: -1;
         }
+    }
 
-        .text {
-            position: absolute;
-            color: #ffffff;
-            font-size: 1rem;
-            line-height: 1em;
+    /* === BREAKPOINTS ======================== */
+    @media (max-width: 720px) {
+        .ui {
+            width: 55%;
         }
+    }
 
-        .boundingBox {
-            position: absolute;
-            border: 2px solid #ffffff;
+    @media (max-width: 630px) {
+        .ui {
+            width: 68%;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .ui {
+            width: 80%;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .ui {
+            width: 90%;
         }
     }
 </style>
