@@ -219,6 +219,7 @@
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
+                audio: false,
                 video: true
             });
             // setup video element
@@ -387,7 +388,7 @@
     <canvas bind:this={canvas}></canvas>
 
     <div class="webcamView">
-        <video bind:this={video} autoplay playsinline></video>
+        <video bind:this={video} muted autoplay playsinline></video>
     </div>
 </main>
 
