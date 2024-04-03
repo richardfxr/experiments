@@ -53,6 +53,7 @@
     let loadingWebcam = false;
     let faceDetector: FaceDetector;
     let supportsGetUserMedia = false;
+    let animationRequestId: number;
     let videoSize: Size = {
         width: null,
         height: null
@@ -66,6 +67,16 @@
     let numFaces: number = 0;
 
     /* === FUNCTIONS ========================== */
+    function readyUp(): void {
+        // check getUserMedia support
+        supportsGetUserMedia = !!navigator.mediaDevices?.getUserMedia;
+
+        if (supportsGetUserMedia)
+            state = "ready";
+        else
+            state = "noWebcam";
+    }
+
     function drawCanvasBackground(): void {
         if (!context) return;
 
@@ -219,18 +230,18 @@
                     height: video.offsetHeight
                 };
                 handleResize();
-                window.requestAnimationFrame(predictWebcam);
+                animationRequestId = window.requestAnimationFrame(predictWebcam);
             });
         } catch (err) {
             state = "noWebcam";
         }
     }
 
-    async function predictWebcam(timestamp: DOMHighResTimeStamp): Promise<void> {
-        if (!video) return;
+    function predictWebcam(timestamp: DOMHighResTimeStamp): void {
+        if (!video || state !== "active") return;
         if (video.currentTime === videoPrevTime) {
             // frame has alreay been drawn
-            window.requestAnimationFrame(predictWebcam);
+            animationRequestId = window.requestAnimationFrame(predictWebcam);
             return;
         }
 
@@ -240,7 +251,29 @@
 
         renderNewFrame(res.detections, timestamp);
 
-        window.requestAnimationFrame(predictWebcam);
+        animationRequestId = window.requestAnimationFrame(predictWebcam);
+    }
+
+    function stopWebcam(): void {
+        if (!video || !video.srcObject) return;
+
+        state="loading";
+
+        // cancel animation frame
+        window.cancelAnimationFrame(animationRequestId);
+
+        // stop every track in the stream
+        const stream = video.srcObject as MediaStream;
+        stream.getTracks().forEach((track) => {
+            track.stop();
+        });
+
+        // reset values
+        video.srcObject = null;
+        loadingWebcam = false;
+        rectangles = [];
+
+        readyUp();
     }
 
     /* === LIFECYCLE ========================== */
@@ -276,13 +309,7 @@
             state = "modelError";
         }
         
-        // check getUserMedia support
-        supportsGetUserMedia = !!navigator.mediaDevices?.getUserMedia;
-
-        if (supportsGetUserMedia)
-            state = "ready";
-        else
-            state = "noWebcam";
+        readyUp();
     });
 </script>
 
@@ -297,7 +324,7 @@
                 <div class="controls">
                     <button
                         class="button"
-                        on:click>
+                        on:click={stopWebcam}>
                         <div class="square"></div>
                         Stop
                     </button>
