@@ -12,6 +12,8 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
     import { onMount } from 'svelte';
+    import { slide } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
     import {
         type Detection,
         FilesetResolver,
@@ -44,9 +46,11 @@
     const backgroundSaturation = 100;
     const backgroundLightness = 44;
     const lightnessFadeSpeed = (100 - backgroundLightness) / timeToFade;
+    const slideParams = { duration: 300, easing: quintOut};
 
     /* === VARIABLES ========================== */
     let state: State = "loading";
+    let loadingWebcam = false;
     let faceDetector: FaceDetector;
     let supportsGetUserMedia = false;
     let videoSize: Size = {
@@ -198,6 +202,7 @@
 
     async function enableWebcam(): Promise<void> {
         if (!supportsGetUserMedia || !faceDetector) return;
+        loadingWebcam = true;
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -207,6 +212,7 @@
             video.srcObject = stream;
             video.addEventListener("loadeddata", () => {
                 state = "active";
+                loadingWebcam = false;
                 // set video size and calculate canvas ratio
                 videoSize = {
                     width: video.offsetWidth,
@@ -216,7 +222,7 @@
                 window.requestAnimationFrame(predictWebcam);
             });
         } catch (err) {
-            console.error(err);
+            state = "noWebcam";
         }
     }
 
@@ -313,19 +319,28 @@
                 
 
                 {#if state === "ready"}
-                    <p>This experiment uses a Google MediaPipe model for face detection. Input data is processed locally. No data is shared.</p>
+                    <p transition:slide={slideParams}>
+                        This experiment uses a <a href="https://developers.google.com/mediapipe" target="_blank" rel="noopener noreferrer">Google MediaPipe</a> model for face detection. Input data is processed locally. No data is shared.
+                    </p>
                     <button
                         class="button"
-                        on:click={enableWebcam}>
+                        on:click={enableWebcam}
+                        transition:slide={slideParams}>
                         <div class="circle"></div>
-                        Enable camera
+                        {loadingWebcam ? `Starting` : `Enable camera`}
                     </button>
                 {:else if state === "noWebcam"}
-                    <p>Failed to access camera. Please reload. If the issue persists, try a different browser or device.</p>
+                    <p transition:slide={slideParams}>
+                        Failed to access camera. Please reload. If the issue persists, try a different browser or device.
+                    </p>
                 {:else if state === "noContext"}
-                    <p>Failed to load canvas context. Please reload. If the issue persists, try a different browser.</p>
+                    <p transition:slide={slideParams}>
+                        Failed to load canvas context. Please reload. If the issue persists, try a different browser.
+                    </p>
                 {:else if state === "modelError"}
-                    <p>Failed to load face detection model. Please reload. If the issue persists, try a different browser.</p>
+                    <p transition:slide={slideParams}>
+                        Failed to load face detection model. Please reload. If the issue persists, try a different browser.
+                    </p>
                 {/if}
             {/if}
         </div>
@@ -343,12 +358,15 @@
 <style lang="scss">
     :root {
         --FCE-clr-1000: #ffffff;
+        --FCE-clr-900: #fff3e7;
         --FCE-clr-800: #ffe6cc;
         --FCE-clr-600: #eb9e4e;
         --FCE-clr-300: #452300;
         --FCE-clr-200: #311c08;
+        --FCE-clr-100: #1d1207;
         --FCE-clr-bg: #e07100;
         --FCE-border-width: 1px;
+        --FCE-transition-fast: 0.2s ease-in-out;
     }
 
     main {
@@ -438,6 +456,10 @@
             line-height: 1.3em;
             text-align: center;
             margin-top: 20px;
+
+            a {
+                text-decoration: underline;
+            }
         }
 
         .button {
@@ -454,6 +476,24 @@
             padding: 12px 25px;
             background-color: var(--FCE-clr-800);
             margin-top: 20px;
+
+            transition: color var(--FCE-transition-fast),
+                        background-color var(--FCE-transition-fast);
+
+            &:hover, &:focus {
+                color: var(--FCE-clr-200);
+                background-color: var(--FCE-clr-900);
+            }
+            
+            &:active {
+                color: var(--FCE-clr-100);
+                background-color: var(--FCE-clr-1000);
+            }
+
+            &:focus-visible {
+                outline: 1px solid var(--FCE-clr-1000);
+                outline-offset: 3px;
+            }
 
             .circle, .square {
                 background-color: var(--FCE-clr-300);

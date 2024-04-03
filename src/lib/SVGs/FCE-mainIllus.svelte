@@ -42,18 +42,26 @@
         }
 
         &.ready {
-            .cross {
-                display: none;
+            .cross.line {
+                &.primary, &.secondary {
+                    stroke: var(--FCE-clr-bg);
+                }
             }
 
             #eyes {
-                display: block;
+                opacity: 1;
+                animation: moveEyes 2.3s cubic-bezier(.54,0,.46,1) infinite;
+            }
+
+            #pupils {
+                animation: movePupils 2.3s cubic-bezier(.54,0,.46,1) infinite;
             }
         }
 
         .line {
             fill: none;
             stroke-width: 1px;
+            transition: stroke var(--FCE-transition-fast);
 
             &.primary {
                 stroke: var(--FCE-clr-1000);
@@ -73,7 +81,83 @@
         }
 
         #eyes {
-            display: none;
+            opacity: 0;
+            transition: opacity var(--FCE-transition-fast);
+        }
+    }
+
+    @media (prefers-motion-reduced: reduce) {
+        svg {
+            &.ready {
+                #eyes, #pupils {
+                    animation: none;
+                }
+            }
+            
+            .line {
+                transition: none;
+            }
+        }
+    }
+
+    /* === ANIMATIONS ========================= */
+    @keyframes moveEyes {
+        from {
+            transform: translate(-80px, -58px);
+        }
+
+        23% {
+            transform: translate(-80px, -58px);
+        }
+
+        43% {
+            transform: translate(93px, 73px);
+        }
+
+        57% {
+            transform: translate(93px, 73px);
+        }
+
+        77% {
+            transform: translate(-80px, -58px);
+        }
+
+        to {
+            transform: translate(-80px, -58px);
+        }
+    }
+
+    @keyframes movePupils {
+        from {
+            transform: translate(-8px, -12px);
+        }
+
+        16% {
+            transform: translate(-11px, 6px);
+        }
+
+        27% {
+            transform: translate(-11px, 6px);
+        }
+
+        43% {
+            transform: translate(12px, 13px);
+        }
+
+        57% {
+            transform: translate(12px, 13px);
+        }
+
+        77% {
+            transform: translate(6px, -4px);
+        }
+
+        89% {
+            transform: translate(-8px, -12px);
+        }
+
+        to {
+            transform: translate(-8px, -12px);
         }
     }
 </style>
