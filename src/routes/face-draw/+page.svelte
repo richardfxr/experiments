@@ -454,6 +454,8 @@
     }
 
     .ui {
+        position: relative;
+        z-index: 5;
         width: 50%;
         max-width: 500px;
 
@@ -555,7 +557,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1;
+
+            opacity: 0.001;
         }
     }
 
