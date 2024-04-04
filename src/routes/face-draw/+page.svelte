@@ -41,6 +41,7 @@
     };
 
     /* === CONSTANTS ========================== */
+    const videoWidth = 80; // display width of video in pixels
     const timeToFade = 4000;
     const backgroundHue = 30;
     const backgroundSaturation = 100;
@@ -64,7 +65,6 @@
         height: null
     }
     let rectangles: Rectangle[] = [];
-    let numFaces: number = 0;
 
     /* === FUNCTIONS ========================== */
     function readyUp(): void {
@@ -176,7 +176,6 @@
             rectangles = rectangles.slice(firstValidRectangle);
 
         if (videoSize.width === null) return;
-        numFaces = detections.length;
 
         // go through new detections from this frame
         for(let i = 0; i < detections.length; i++) {
@@ -319,18 +318,8 @@
 
 <main class={state}>
     <div class="wrapper">
-        <div class="ui">
-            {#if state === "active"}
-                <div class="controls">
-                    <button
-                        class="button"
-                        on:click={stopWebcam}>
-                        <div class="square"></div>
-                        Stop
-                    </button>
-                    <p>{numFaces.toString()} {numFaces === 1 ? 'face' : 'faces'}</p>
-                </div>
-            {:else}
+        {#if state !== "active"}
+            <div class="ui">
                 <MainIllus {state} />
                 <div class="h1Container">
                     <h1>
@@ -344,7 +333,6 @@
                     </h1>
                 </div>
                 
-
                 {#if state === "ready"}
                     <p transition:slide={slideParams}>
                         This experiment uses a <a href="https://developers.google.com/mediapipe" target="_blank" rel="noopener noreferrer">Google MediaPipe</a> model for face detection. Input data is processed locally. No data is shared.
@@ -369,15 +357,24 @@
                         Failed to load face detection model. Please reload. If the issue persists, try a different browser.
                     </p>
                 {/if}
-            {/if}
-        </div>
+            </div>
+        {:else}
+            <h1 class="visuallyHidden">Face Draw</h1>
+            <button
+                class="stop button"
+                on:click={stopWebcam}>
+                <div class="square"></div>
+                Stop
+            </button>
+        {/if}
     </div>
+
+    <video
+        style="transform: scale({videoSize.width ? videoWidth / videoSize.width : 0.1});"
+        bind:this={video} autoplay>
+    </video>
 
     <canvas bind:this={canvas}></canvas>
-
-    <div class="webcamView">
-        <video bind:this={video} autoplay></video>
-    </div>
 </main>
 
 
@@ -402,38 +399,78 @@
         font-family: 'General Sans', sans-serif;
         background-color: var(--FCE-clr-bg);
 
+        overflow-x: hidden;
+
         &.active {
             .wrapper {
-                justify-content: flex-start;
+                position: fixed;
+                top: unset;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 5;
+                min-height: unset;
+
+                padding: 0 0 15px 0;
                 background-color: transparent;
-                padding: 0;
             }
 
-            .ui {
-                .controls {
-                    display: flex;
-                    flex-flow: row wrap;
-                    background-color: var(--FCE-clr-bg);
-
-                    .button {
-                        gap: 8px;
-                        width: auto;
-                        font-size: 1rem;
-                        padding: 8px 17px;
-                        margin-top: 0;
-                    }
-
-                    p {
-                        flex-grow: 1;
-                        display: flex;
-                        align-items: center;
-
-                        padding: 8px 17px;
-                        border: solid var(--FCE-border-width) var(--FCE-clr-600);
-                        margin-top: 0;
-                    }
-                }
+            .button {
+                gap: 8px;
+                width: auto;
+                font-size: 1rem;
+                padding: 8px 17px;
+                margin-top: 0;
             }
+        }
+    }
+
+    .button {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+
+        color: var(--FCE-clr-300);
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 12px 25px;
+        background-color: var(--FCE-clr-800);
+        margin-top: 20px;
+
+        transition: color var(--FCE-transition-fast),
+                    background-color var(--FCE-transition-fast);
+
+        &:hover, &:focus {
+            color: var(--FCE-clr-200);
+            background-color: var(--FCE-clr-900);
+        }
+        
+        &:active {
+            color: var(--FCE-clr-100);
+            background-color: var(--FCE-clr-1000);
+        }
+
+        &:focus-visible {
+            outline: 1px solid var(--FCE-clr-1000);
+            outline-offset: 3px;
+        }
+
+        .circle, .square {
+            background-color: var(--FCE-clr-300);
+        }
+
+        .square {
+            width: 12px;
+            height: 12px;
+        }
+
+        .circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 30px;
         }
     }
 
@@ -455,7 +492,6 @@
 
     .ui {
         position: relative;
-        z-index: 5;
         width: 50%;
         max-width: 500px;
 
@@ -490,55 +526,17 @@
                 text-decoration: underline;
             }
         }
+    }
 
-        .button {
-            display: flex;
-            flex-flow: row wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
+    video {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
 
-            color: var(--FCE-clr-300);
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 12px 25px;
-            background-color: var(--FCE-clr-800);
-            margin-top: 20px;
-
-            transition: color var(--FCE-transition-fast),
-                        background-color var(--FCE-transition-fast);
-
-            &:hover, &:focus {
-                color: var(--FCE-clr-200);
-                background-color: var(--FCE-clr-900);
-            }
-            
-            &:active {
-                color: var(--FCE-clr-100);
-                background-color: var(--FCE-clr-1000);
-            }
-
-            &:focus-visible {
-                outline: 1px solid var(--FCE-clr-1000);
-                outline-offset: 3px;
-            }
-
-            .circle, .square {
-                background-color: var(--FCE-clr-300);
-            }
-
-            .square {
-                width: 12px;
-                height: 12px;
-            }
-
-            .circle {
-                width: 14px;
-                height: 14px;
-                border-radius: 30px;
-            }
-        }
+        transform-origin: top left;
+        pointer-events: none;
     }
 
     canvas {
@@ -552,14 +550,6 @@
         overflow: hidden;
 
         font-family: sans-serif;
-
-        video {
-            position: fixed;
-            top: 0;
-            left: 0;
-
-            opacity: 0.001;
-        }
     }
 
     /* === BREAKPOINTS ======================== */
