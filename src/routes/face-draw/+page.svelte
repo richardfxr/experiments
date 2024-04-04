@@ -216,6 +216,7 @@
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
+                audio: false,
                 video: true
             });
             // setup video element
@@ -371,7 +372,10 @@
 
     <video
         style="transform: scale({videoSize.width ? videoWidth / videoSize.width : 0.1});"
-        bind:this={video} autoplay>
+        bind:this={video}
+        muted 
+        autoplay
+        playsinline>
     </video>
 
     <canvas bind:this={canvas}></canvas>
