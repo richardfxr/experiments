@@ -4,9 +4,16 @@
 
     <url>
         <loc>https://experiments.richardfxr.com</loc>
-        <lastmod>2024-03-07</lastmod>
+        <lastmod>2024-04-03</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
+    </url>
+
+    <url>
+        <loc>https://experiments.richardfxr.com/face-draw</loc>
+        <lastmod>2024-04-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
     </url>
 
     <url>

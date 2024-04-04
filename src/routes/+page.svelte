@@ -81,12 +81,24 @@
         <li>
             <a
                 data-sveltekit-reload
+                href="/face-draw">
+                <h2>Face Draw</h2>
+                <p>An interactive canvas that is painted using face tracking.</p>
+                <Image
+                    src="/images/index/FCE-thumbnail"
+                    alt="A square grid of six by six pixels fading from black to yellow." />
+            </a>
+        </li>
+
+        <li>
+            <a
+                data-sveltekit-reload
                 href="/pixel-viewer">
                 <h2>Pixel Viewer</h2>
                 <p>An image viewer with customizable mouse, trackpad, and touch interactions.</p>
                 <Image
                     src="/images/index/PXL-thumbnail"
-                    alt="A square grid of six by six pixels fading from black to yellow." />
+                    alt="White rectangles that trace the movement of a face, gradually fading into the orange background over time." />
             </a>
         </li>
 

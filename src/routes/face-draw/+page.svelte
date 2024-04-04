@@ -315,6 +315,22 @@
 
 
 
+<svelte:head>
+    <title>Face Draw</title>
+    <meta
+        name="description"
+        content="An interactive canvas that is painted using face tracking."
+    />
+    <link rel="icon" href="FCE-favicon.png" />
+    <meta name="theme-color" content="#e07100" />
+    <!-- open graph image -->
+    <meta property="og:image" content="/FCE-og-image-1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="White rectangles that trace the movement of a face, gradually fading into the orange background over time." />
+</svelte:head>
+
 <svelte:window on:resize={handleResize}/>
 
 <main class={state}>
