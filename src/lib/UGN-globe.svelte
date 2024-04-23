@@ -130,27 +130,32 @@
 
         $UGNglobe.onZoom(pov => curAlt = pov.altitude);
 
-        // create observer
-        const observer = new IntersectionObserver(entries => {
+        // create intersection observer
+        const intersectionObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 globeContainer.classList.toggle("offScreen", entry.isIntersecting);
             })
         }, {rootMargin: "0px 0px -100% 0px"});
         
-        observer.observe(scrollToTopObserver);
+        intersectionObserver.observe(scrollToTopObserver);
+
+        // create resize observer
+        const resizeObserver = new ResizeObserver(() => resizeGlobe());
+        resizeObserver.observe(globeContainer);
 
         // check if full screen is allowed then check if any element is fullscreened
         allowFullscreen = document.fullscreenEnabled;
         checkFullscreen();
 
-        // resize to prevent initial load error
-        resizeGlobe();
+        return () => {
+            // unobserve observers
+            intersectionObserver.unobserve(scrollToTopObserver);
+            resizeObserver.unobserve(globeContainer);
+        };
 	});
 </script>
 
 
-
-<svelte:window on:resize={() => { resizeGlobe(); checkFullscreen(); }}></svelte:window>
 
 <div
     class="globeContainer"
