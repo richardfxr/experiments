@@ -2,9 +2,9 @@
     /* === IMPORTS ============================ */
     import { onMount } from 'svelte';
     import * as THREE from 'three';
-    import VertexShader from '$shaders/halftonePainter-vertex.glsl?raw';
-    import FragmentShader from '$shaders/halftonePainter-fragment.glsl?raw';
-    import BufferFragmentShader from '$shaders/halftonePainter-bufferFragment.glsl?raw';
+    import VertexShader from '$shaders/cellularAutomaton-vertex.glsl?raw';
+    import FragmentShader from '$shaders/cellularAutomaton-fragment.glsl?raw';
+    import BufferFragmentShader from '$shaders/gameOfLife-bufferFragment.glsl?raw';
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
