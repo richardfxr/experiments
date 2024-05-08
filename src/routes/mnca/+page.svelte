@@ -226,25 +226,52 @@
         material.uniforms.uResolution.value.y = canvasHeight;
     }
 
+    // returns either 0 or 255
+    function getRandomColor(): number {
+        return 255 * Math.floor(Math.random() * 2);
+    }
+
+    // mono crhome version of generateRandomStartCondition()
+    // function generateRandomStartCondition(): THREE.DataTexture {
+    //     // create a buffer with color data
+    //     const size = canvasWidth * canvasHeight;
+    //     const data = new Uint8Array(4 * size);
+
+    //     for (let i = 0; i < size; i++) {
+    //         const stride = i * 4;
+
+    //         const color = getRandomColor();
+
+    //         data[stride] = color;
+    //         data[stride + 1] = color;
+    //         data[stride + 2] = color;
+    //         data[stride + 3] = 255;
+    //     }
+
+    //     // used the buffer to create a DataTexture
+    //     const texture = new THREE.DataTexture(
+    //         data,
+    //         canvasWidth,
+    //         canvasHeight,
+    //         THREE.RGBAFormat
+    //     );
+    //     texture.needsUpdate = true;
+
+    //     return texture;
+    // }
+
     function generateRandomStartCondition(): THREE.DataTexture {
         // create a buffer with color data
         const size = canvasWidth * canvasHeight;
         const data = new Uint8Array(4 * size);
 
-        for (var i = 0; i < size; i++) {
-            var stride = i * 4;
+        for (let i = 0; i < size; i++) {
+            const stride = i * 4;
 
-            if (Math.random() < 0.5) {
-                data[stride] = 255;
-                data[stride + 1] = 255;
-                data[stride + 2] = 255;
-                data[stride + 3] = 255;
-            } else {
-                data[stride] = 0;
-                data[stride + 1] = 0;
-                data[stride + 2] = 0;
-                data[stride + 3] = 255;
-            }
+            data[stride] = getRandomColor();
+            data[stride + 1] = getRandomColor();
+            data[stride + 2] = getRandomColor();
+            data[stride + 3] = 255;
         }
 
         // used the buffer to create a DataTexture
