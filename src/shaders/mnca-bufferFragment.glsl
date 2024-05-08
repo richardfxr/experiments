@@ -4,6 +4,7 @@ uniform vec2 uResolution;
 uniform vec2 uNeighborhoodA[108];
 uniform vec2 uNeighborhoodB[36];
 uniform vec2 uNeighborhoodC[20];
+uniform vec2 uNeighborhoodD[80];
 varying vec2 vUvs;
 
 vec3 GetNeighborsA(vec2 p) {
@@ -52,7 +53,21 @@ vec3 GetNeighborsC(vec2 p) {
     return neighbors;
 }
 
-float GetNewState(float neighborsA, float neighborsB, float neighborsC) {
+vec3 GetNeighborsD(vec2 p) {
+    vec3 neighbors = vec3(0.0);
+
+    for(int i = 0; i < 80; i++) {
+        // scale offset to match texture coordinates
+        vec2 offset = uNeighborhoodD[i] / uResolution.xy;
+        // get state of neighboring cell
+        vec4 neighbor = texture2D(uTexture, p + offset); 
+        neighbors += neighbor.brg;
+    }
+
+    return neighbors;
+}
+
+float GetNewState(float neighborsA, float neighborsB, float neighborsC, float neighborsD) {
     float newState = -1.0;
 
     if(neighborsA >= 20.0 && neighborsA <= 22.0) {newState = 1.0;}
@@ -62,6 +77,10 @@ float GetNewState(float neighborsA, float neighborsB, float neighborsC) {
     if(neighborsB >= 16.0 && neighborsB <= 24.0) {newState = 1.0;}
     if(neighborsC >= 3.0 && neighborsC <= 7.0) {newState = 0.0;}
     // if(neighborsC >= 11.0 && neighborsC <= 12.0) {newState = 1.0;}
+    if(neighborsD == 5.0) {newState = 1.0;}
+    // if(neighborsD >= 24.0 && neighborsD <= 25.0) {newState = 1.0;}
+    // if(neighborsD >= 40.0 && neighborsD <= 42.0) {newState = 0.0;}
+    // if(neighborsD >= 45.0 && neighborsD <= 68.0) {newState = 1.0;}
     if(neighborsA >= 16.0 &&  neighborsA <= 19.0) {newState = 0.0;}
 
     return newState;
@@ -74,10 +93,11 @@ void main() {
     vec3 neighborsA = GetNeighborsA(vUvs);
     vec3 neighborsB = GetNeighborsB(vUvs);
     vec3 neighborsC = GetNeighborsC(vUvs);
+    vec3 neighborsD = GetNeighborsD(vUvs);
 
-    float newStateR = GetNewState(neighborsA.r, neighborsB.r, neighborsC.r);
-    float newStateG = GetNewState(neighborsA.g, neighborsB.g, neighborsC.g);
-    float newStateB = GetNewState(neighborsA.b, neighborsB.b, neighborsC.b);
+    float newStateR = GetNewState(neighborsA.r, neighborsB.r, neighborsC.r, neighborsD.r);
+    float newStateG = GetNewState(neighborsA.g, neighborsB.g, neighborsC.g, neighborsD.g);
+    float newStateB = GetNewState(neighborsA.b, neighborsB.b, neighborsC.b, neighborsD.b);
 
     gl_FragColor = vec4(
         newStateR == -1.0 ? currentState.r : newStateR,
