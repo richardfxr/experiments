@@ -12,6 +12,8 @@
     /* === CONSTANTS ========================== */
     // Multiple Neighborhood Cellular Automaton neighborhoods
     // (x, y) represents relative location to current cell
+
+    // outer ring
     const neighborhoodA = [
         new THREE.Vector2(-2, -7),
         new THREE.Vector2(-1, -7),
@@ -123,6 +125,7 @@
         new THREE.Vector2(2, 7)
     ];
 
+    // inner ring
     const neighborhoodB = [
         new THREE.Vector2(-1, -3),
         new THREE.Vector2(0, -3),
@@ -161,6 +164,32 @@
         new THREE.Vector2(0, 3),
         new THREE.Vector2(1, 3)
     ];
+
+    // previous color channel neighborhood
+    const neighborhoodC = [
+        new THREE.Vector2(-1, -2),
+        new THREE.Vector2(0, -2),
+        new THREE.Vector2(1, -2),
+        new THREE.Vector2(-2, -1),
+        new THREE.Vector2(-1, -1),
+        new THREE.Vector2(0, -1),
+        new THREE.Vector2(1, -1),
+        new THREE.Vector2(2, -1),
+        new THREE.Vector2(-2, 0),
+        new THREE.Vector2(-1, 0),
+        new THREE.Vector2(1, 0),
+        new THREE.Vector2(2, 0),
+        new THREE.Vector2(-2, 1),
+        new THREE.Vector2(-1, 1),
+        new THREE.Vector2(0, 1),
+        new THREE.Vector2(1, 1),
+        new THREE.Vector2(2, 1),
+        new THREE.Vector2(-1, 2),
+        new THREE.Vector2(0, 2),
+        new THREE.Vector2(1, 2)
+    ];
+
+    console.log(neighborhoodC.length);
 
     /* === VARIABLES ========================== */
     // THREE
@@ -349,7 +378,8 @@
                 uTexture: { value: generateRandomStartCondition() },
                 uResolution: { value: resolution },
                 uNeighborhoodA: { value: neighborhoodA },
-                uNeighborhoodB: { value: neighborhoodB }
+                uNeighborhoodB: { value: neighborhoodB },
+                uNeighborhoodC: { value: neighborhoodC }
             },
             vertexShader: VertexShader,
             fragmentShader: BufferFragmentShader
