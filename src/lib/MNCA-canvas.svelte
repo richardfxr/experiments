@@ -6,272 +6,20 @@
     import FragmentShader from '$shaders/cellularAutomaton-fragment.glsl?raw';
     import BufferFragmentShader from '$shaders/mnca-bufferFragment.glsl?raw';
 
+    /* === PROPS ============================== */
+    export let fps: number; // bind
+    export let neighborhoodStates: boolean[];
+    export let neighborhoodA: THREE.Vector2[];
+    export let neighborhoodALength: number;
+    export let neighborhoodB: THREE.Vector2[];
+    export let neighborhoodBLength: number;
+    export let neighborhoodC: THREE.Vector2[];
+    export let neighborhoodCLength: number;
+    export let neighborhoodD: THREE.Vector2[];
+    export let neighborhoodDLength: number;
+
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
-
-    /* === CONSTANTS ========================== */
-    // Multiple Neighborhood Cellular Automaton neighborhoods
-    // (x, y) represents relative location to current cell
-
-    // outer ring
-    const neighborhoodA = [
-        new THREE.Vector2(-2, -7),
-        new THREE.Vector2(-1, -7),
-        new THREE.Vector2(0, -7),
-        new THREE.Vector2(1, -7),
-        new THREE.Vector2(2, -7),
-        new THREE.Vector2(-4, -6),
-        new THREE.Vector2(-3, -6),
-        new THREE.Vector2(-2, -6),
-        new THREE.Vector2(-1, -6),
-        new THREE.Vector2(0, -6),
-        new THREE.Vector2(1, -6),
-        new THREE.Vector2(2, -6),
-        new THREE.Vector2(3, -6),
-        new THREE.Vector2(4, -6),
-        new THREE.Vector2(-5, -5),
-        new THREE.Vector2(-4, -5),
-        new THREE.Vector2(-3, -5),
-        new THREE.Vector2(-2, -5),
-        new THREE.Vector2(-1, -5),
-        new THREE.Vector2(0, -5),
-        new THREE.Vector2(1, -5),
-        new THREE.Vector2(2, -5),
-        new THREE.Vector2(3, -5),
-        new THREE.Vector2(4, -5),
-        new THREE.Vector2(5, -5),
-        new THREE.Vector2(-6, -4),
-        new THREE.Vector2(-5, -4),
-        new THREE.Vector2(-4, -4),
-        new THREE.Vector2(-3, -4),
-        new THREE.Vector2(3, -4),
-        new THREE.Vector2(4, -4),
-        new THREE.Vector2(5, -4),
-        new THREE.Vector2(6, -4),
-        new THREE.Vector2(-6, -3),
-        new THREE.Vector2(-5, -3),
-        new THREE.Vector2(-4, -3),
-        new THREE.Vector2(4, -3),
-        new THREE.Vector2(5, -3),
-        new THREE.Vector2(6, -3),
-        new THREE.Vector2(-7, -2),
-        new THREE.Vector2(-6, -2),
-        new THREE.Vector2(-5, -2),
-        new THREE.Vector2(5, -2),
-        new THREE.Vector2(6, -2),
-        new THREE.Vector2(7, -2),
-        new THREE.Vector2(-7, -1),
-        new THREE.Vector2(-6, -1),
-        new THREE.Vector2(-5, -1),
-        new THREE.Vector2(5, -1),
-        new THREE.Vector2(6, -1),
-        new THREE.Vector2(7, -1),
-        new THREE.Vector2(-7, 0),
-        new THREE.Vector2(-6, 0),
-        new THREE.Vector2(-5, 0),
-        new THREE.Vector2(5, 0),
-        new THREE.Vector2(6, 0),
-        new THREE.Vector2(7, 0),
-        new THREE.Vector2(-7, 1),
-        new THREE.Vector2(-6, 1),
-        new THREE.Vector2(-5, 1),
-        new THREE.Vector2(5, 1),
-        new THREE.Vector2(6, 1),
-        new THREE.Vector2(7, 1),
-        new THREE.Vector2(-7, 2),
-        new THREE.Vector2(-6, 2),
-        new THREE.Vector2(-5, 2),
-        new THREE.Vector2(5, 2),
-        new THREE.Vector2(6, 2),
-        new THREE.Vector2(7, 2),
-        new THREE.Vector2(-6, 3),
-        new THREE.Vector2(-5, 3),
-        new THREE.Vector2(-4, 3),
-        new THREE.Vector2(4, 3),
-        new THREE.Vector2(5, 3),
-        new THREE.Vector2(6, 3),
-        new THREE.Vector2(-6, 4),
-        new THREE.Vector2(-5, 4),
-        new THREE.Vector2(-4, 4),
-        new THREE.Vector2(-3, 4),
-        new THREE.Vector2(3, 4),
-        new THREE.Vector2(4, 4),
-        new THREE.Vector2(5, 4),
-        new THREE.Vector2(6, 4),
-        new THREE.Vector2(-5, 5),
-        new THREE.Vector2(-4, 5),
-        new THREE.Vector2(-3, 5),
-        new THREE.Vector2(-2, 5),
-        new THREE.Vector2(-1, 5),
-        new THREE.Vector2(0, 5),
-        new THREE.Vector2(1, 5),
-        new THREE.Vector2(2, 5),
-        new THREE.Vector2(3, 5),
-        new THREE.Vector2(4, 5),
-        new THREE.Vector2(5, 5),
-        new THREE.Vector2(-4, 6),
-        new THREE.Vector2(-3, 6),
-        new THREE.Vector2(-2, 6),
-        new THREE.Vector2(-1, 6),
-        new THREE.Vector2(0, 6),
-        new THREE.Vector2(1, 6),
-        new THREE.Vector2(2, 6),
-        new THREE.Vector2(3, 6),
-        new THREE.Vector2(4, 6),
-        new THREE.Vector2(-2, 7),
-        new THREE.Vector2(-1, 7),
-        new THREE.Vector2(0, 7),
-        new THREE.Vector2(1, 7),
-        new THREE.Vector2(2, 7)
-    ];
-
-    // inner ring
-    const neighborhoodB = [
-        new THREE.Vector2(-1, -3),
-        new THREE.Vector2(0, -3),
-        new THREE.Vector2(1, -3),
-        new THREE.Vector2(-2, -2),
-        new THREE.Vector2(-1, -2),
-        new THREE.Vector2(0, -2),
-        new THREE.Vector2(1, -2),
-        new THREE.Vector2(2, -2),
-        new THREE.Vector2(-3, -1),
-        new THREE.Vector2(-2, -1),
-        new THREE.Vector2(-1, -1),
-        new THREE.Vector2(0, -1),
-        new THREE.Vector2(1, -1),
-        new THREE.Vector2(2, -1),
-        new THREE.Vector2(3, -1),
-        new THREE.Vector2(-3, 0),
-        new THREE.Vector2(-2, 0),
-        new THREE.Vector2(-1, 0),
-        new THREE.Vector2(1, 0),
-        new THREE.Vector2(2, 0),
-        new THREE.Vector2(3, 0),
-        new THREE.Vector2(-3, 1),
-        new THREE.Vector2(-2, 1),
-        new THREE.Vector2(-1, 1),
-        new THREE.Vector2(0, 1),
-        new THREE.Vector2(1, 1),
-        new THREE.Vector2(2, 1),
-        new THREE.Vector2(3, 1),
-        new THREE.Vector2(-2, 2),
-        new THREE.Vector2(-1, 2),
-        new THREE.Vector2(0, 2),
-        new THREE.Vector2(1, 2),
-        new THREE.Vector2(2, 2),
-        new THREE.Vector2(-1, 3),
-        new THREE.Vector2(0, 3),
-        new THREE.Vector2(1, 3)
-    ];
-
-    // previous color channel neighborhood
-    const neighborhoodC = [
-        new THREE.Vector2(-1, -2),
-        new THREE.Vector2(0, -2),
-        new THREE.Vector2(1, -2),
-        new THREE.Vector2(-2, -1),
-        new THREE.Vector2(-1, -1),
-        new THREE.Vector2(0, -1),
-        new THREE.Vector2(1, -1),
-        new THREE.Vector2(2, -1),
-        new THREE.Vector2(-2, 0),
-        new THREE.Vector2(-1, 0),
-        new THREE.Vector2(1, 0),
-        new THREE.Vector2(2, 0),
-        new THREE.Vector2(-2, 1),
-        new THREE.Vector2(-1, 1),
-        new THREE.Vector2(0, 1),
-        new THREE.Vector2(1, 1),
-        new THREE.Vector2(2, 1),
-        new THREE.Vector2(-1, 2),
-        new THREE.Vector2(0, 2),
-        new THREE.Vector2(1, 2)
-    ];
-
-    // next color channel neighboorhood
-    const neighborhoodD = [
-        new THREE.Vector2(-2, -7),
-        new THREE.Vector2(-1, -7),
-        new THREE.Vector2(0, -7),
-        new THREE.Vector2(1, -7),
-        new THREE.Vector2(2, -7),
-        new THREE.Vector2(-4, -6),
-        new THREE.Vector2(-3, -6),
-        new THREE.Vector2(-2, -6),
-        new THREE.Vector2(-1, -6),
-        new THREE.Vector2(0, -6),
-        new THREE.Vector2(1, -6),
-        new THREE.Vector2(2, -6),
-        new THREE.Vector2(3, -6),
-        new THREE.Vector2(4, -6),
-        new THREE.Vector2(-5, -5),
-        new THREE.Vector2(-4, -5),
-        new THREE.Vector2(-3, -5),
-        new THREE.Vector2(3, -5),
-        new THREE.Vector2(4, -5),
-        new THREE.Vector2(5, -5),
-        new THREE.Vector2(-6, -4),
-        new THREE.Vector2(-5, -4),
-        new THREE.Vector2(-4, -4),
-        new THREE.Vector2(4, -4),
-        new THREE.Vector2(5, -4),
-        new THREE.Vector2(6, -4),
-        new THREE.Vector2(-6, -3),
-        new THREE.Vector2(-5, -3),
-        new THREE.Vector2(5, -3),
-        new THREE.Vector2(6, -3),
-        new THREE.Vector2(-7, -2),
-        new THREE.Vector2(-6, -2),
-        new THREE.Vector2(6, -2),
-        new THREE.Vector2(7, -2),
-        new THREE.Vector2(-7, -1),
-        new THREE.Vector2(-6, -1),
-        new THREE.Vector2(6, -1),
-        new THREE.Vector2(7, -1),
-        new THREE.Vector2(-7, 0),
-        new THREE.Vector2(-6, 0),
-        new THREE.Vector2(6, 0),
-        new THREE.Vector2(7, 0),
-        new THREE.Vector2(-7, 1),
-        new THREE.Vector2(-6, 1),
-        new THREE.Vector2(6, 1),
-        new THREE.Vector2(7, 1),
-        new THREE.Vector2(-7, 2),
-        new THREE.Vector2(-6, 2),
-        new THREE.Vector2(6, 2),
-        new THREE.Vector2(7, 2),
-        new THREE.Vector2(-6, 3),
-        new THREE.Vector2(-5, 3),
-        new THREE.Vector2(5, 3),
-        new THREE.Vector2(6, 3),
-        new THREE.Vector2(-6, 4),
-        new THREE.Vector2(-5, 4),
-        new THREE.Vector2(-4, 4),
-        new THREE.Vector2(4, 4),
-        new THREE.Vector2(5, 4),
-        new THREE.Vector2(6, 4),
-        new THREE.Vector2(-5, 5),
-        new THREE.Vector2(-4, 5),
-        new THREE.Vector2(-3, 5),
-        new THREE.Vector2(3, 5),
-        new THREE.Vector2(4, 5),
-        new THREE.Vector2(5, 5),
-        new THREE.Vector2(-4, 6),
-        new THREE.Vector2(-3, 6),
-        new THREE.Vector2(-2, 6),
-        new THREE.Vector2(-1, 6),
-        new THREE.Vector2(0, 6),
-        new THREE.Vector2(1, 6),
-        new THREE.Vector2(2, 6),
-        new THREE.Vector2(3, 6),
-        new THREE.Vector2(4, 6),
-        new THREE.Vector2(-2, 7),
-        new THREE.Vector2(-1, 7),
-        new THREE.Vector2(0, 7),
-        new THREE.Vector2(1, 7),
-        new THREE.Vector2(2, 7)
-    ];
 
     /* === VARIABLES ========================== */
     // THREE
@@ -285,7 +33,6 @@
     let bufferMesh: THREE.Mesh;
     let renderer: THREE.WebGLRenderer;
     let camera: THREE.OrthographicCamera;
-    let fps = 0;
     let frames = 0;
     let prevTime = 0;
     // others
@@ -310,7 +57,21 @@
         const temp = renderBufferA;
         renderBufferA = renderBufferB;
         renderBufferB = temp;
+
+        // update uniforms
         bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
+        bufferMaterial.uniforms.uNeighborhoodA.value = neighborhoodA;
+        bufferMaterial.uniforms.uNeighborhoodALength.value =
+            neighborhoodStates[0] ? neighborhoodALength : 0;
+        bufferMaterial.uniforms.uNeighborhoodB.value = neighborhoodB;
+        bufferMaterial.uniforms.uNeighborhoodBLength.value =
+            neighborhoodStates[1] ? neighborhoodBLength : 0;
+        bufferMaterial.uniforms.uNeighborhoodC.value = neighborhoodC;
+        bufferMaterial.uniforms.uNeighborhoodCLength.value =
+            neighborhoodStates[2] ? neighborhoodCLength : 0;
+        bufferMaterial.uniforms.uNeighborhoodD.value = neighborhoodD;
+        bufferMaterial.uniforms.uNeighborhoodDLength.value =
+            neighborhoodStates[3] ? neighborhoodDLength : 0;
 
         // log frame rate
         frames++;
@@ -460,9 +221,13 @@
                 uTexture: { value: generateRandomStartCondition() },
                 uResolution: { value: resolution },
                 uNeighborhoodA: { value: neighborhoodA },
+                uNeighborhoodALength: { value: neighborhoodStates[0] ? neighborhoodALength : 0 },
                 uNeighborhoodB: { value: neighborhoodB },
+                uNeighborhoodBLength: { value: neighborhoodStates[1] ? neighborhoodBLength : 0 },
                 uNeighborhoodC: { value: neighborhoodC },
-                uNeighborhoodD: { value: neighborhoodD }
+                uNeighborhoodCLength: { value: neighborhoodStates[2] ? neighborhoodCLength : 0 },
+                uNeighborhoodD: { value: neighborhoodD },
+                uNeighborhoodDLength: { value: neighborhoodStates[3] ? neighborhoodDLength : 0 }
             },
             vertexShader: VertexShader,
             fragmentShader: BufferFragmentShader
@@ -498,29 +263,11 @@
 
 
 
-<main>
-    <p class="fps">{fps}</p>
-    <canvas bind:this={canvas}></canvas>
-</main>
+<canvas bind:this={canvas}></canvas>
 
 
 
 <style lang="scss">
-    main {
-        height: 100vh;
-    }
-
-    .fps {
-        position: fixed;
-        top: 2px;
-        left: 2px;
-        
-        font-family: sans-serif;
-        padding: 0 3px;
-        border-radius: 5px;
-        background-color: white;
-    }
-
     canvas {
         display: block;
         width: 100%;

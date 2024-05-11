@@ -1,16 +1,20 @@
 precision mediump float;
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
-uniform vec2 uNeighborhoodA[108];
-uniform vec2 uNeighborhoodB[36];
-uniform vec2 uNeighborhoodC[20];
-uniform vec2 uNeighborhoodD[80];
+uniform vec2 uNeighborhoodA[224];
+uniform int uNeighborhoodALength;
+uniform vec2 uNeighborhoodB[224];
+uniform int uNeighborhoodBLength;
+uniform vec2 uNeighborhoodC[224];
+uniform int uNeighborhoodCLength;
+uniform vec2 uNeighborhoodD[224];
+uniform int uNeighborhoodDLength;
 varying vec2 vUvs;
 
 vec3 GetNeighborsA(vec2 p) {
     vec3 neighbors = vec3(0.0);
 
-    for(int i = 0; i < 108; i++) {
+    for(int i = 0; i < uNeighborhoodALength; i++) {
         // scale offset to match texture coordinates
         vec2 offset = uNeighborhoodA[i] / uResolution.xy;
         // get state of neighboring cell
@@ -28,7 +32,7 @@ vec3 GetNeighborsA(vec2 p) {
 vec3 GetNeighborsB(vec2 p) {
     vec3 neighbors = vec3(0.0);
 
-    for(int i = 0; i < 36; i++) {
+    for(int i = 0; i < uNeighborhoodBLength; i++) {
         // scale offset to match texture coordinates
         vec2 offset = uNeighborhoodB[i] / uResolution.xy;
         // get state of neighboring cell
@@ -42,7 +46,7 @@ vec3 GetNeighborsB(vec2 p) {
 vec3 GetNeighborsC(vec2 p) {
     vec3 neighbors = vec3(0.0);
 
-    for(int i = 0; i < 20; i++) {
+    for(int i = 0; i < uNeighborhoodCLength; i++) {
         // scale offset to match texture coordinates
         vec2 offset = uNeighborhoodC[i] / uResolution.xy;
         // get state of neighboring cell
@@ -56,7 +60,7 @@ vec3 GetNeighborsC(vec2 p) {
 vec3 GetNeighborsD(vec2 p) {
     vec3 neighbors = vec3(0.0);
 
-    for(int i = 0; i < 80; i++) {
+    for(int i = 0; i < uNeighborhoodDLength; i++) {
         // scale offset to match texture coordinates
         vec2 offset = uNeighborhoodD[i] / uResolution.xy;
         // get state of neighboring cell
