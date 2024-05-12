@@ -377,7 +377,9 @@
                     <p>Which neighboring cells are considered</p>
                     <ul class="legend" aria-label="legend">
                         <li>
-                            <div class="cellIcon">
+                            <div
+                                class="cellIcon"
+                                style="background-color: var(--MNCA-clr-red);">
                                 <CurrentCellIcon />
                             </div>
                             current cell
@@ -385,8 +387,7 @@
                         <li>
                             <div
                                 class="cellIcon"
-                                style="background-color: var(--MNCA-clr-1000);"
-                                >
+                                style="background-color: var(--MNCA-clr-1000);">
                                 <span class="visuallyHidden">checked checkbox</span>
                             </div>
                             considered cell
@@ -411,8 +412,7 @@
                         <li>
                             <div
                                 class="cellIcon"
-                                style="background-color: var(--MNCA-clr-red);"
-                                >
+                                style="background-color: var(--MNCA-clr-red);">
                                 <span class="visuallyHidden">Red button.</span>
                             </div>
                             death
@@ -420,8 +420,7 @@
                         <li>
                             <div
                                 class="cellIcon"
-                                style="background-color: var(--MNCA-clr-teal);"
-                                >
+                                style="background-color: var(--MNCA-clr-teal);">
                                 <span class="visuallyHidden">Teal button.</span>
                             </div>
                             birth
@@ -447,8 +446,7 @@
                         <li>
                             <div
                                 class="cellIcon"
-                                style="background-color: var(--MNCA-clr-red);"
-                                >
+                                style="background-color: var(--MNCA-clr-red);">
                                 <span class="visuallyHidden">Red button.</span>
                             </div>
                             death
@@ -456,8 +454,7 @@
                         <li>
                             <div
                                 class="cellIcon"
-                                style="background-color: var(--MNCA-clr-teal);"
-                                >
+                                style="background-color: var(--MNCA-clr-teal);">
                                 <span class="visuallyHidden">Teal button.</span>
                             </div>
                             birth

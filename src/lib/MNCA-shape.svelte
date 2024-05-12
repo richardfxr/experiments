@@ -14,12 +14,41 @@
 
     /* === CONSTANTS ========================== */
     const dispatch = createEventDispatcher();
+
+    /* === VARIABLES ========================== */
+    let draw = false;
+
+    /* === FUNCTIONS ========================== */
+    function handleDraw(event: PointerEvent, cellIndex: number): void {
+        if (!draw || event.buttons !== 1) return;
+        console.log("handleDraw");
+        event.preventDefault();
+
+        shape[cellIndex] = !shape[cellIndex];
+
+        dispatch("shapeChange", {
+            neighborhoodIndex: index,
+            cellIndex
+        });
+
+        // release pointer capture for touch screens
+        const label = document.getElementById(`shapeCell-${index}-${cellIndex}-label`);
+        label?.releasePointerCapture(event.pointerId);
+    }
+
+    function handlePointerDown(event: PointerEvent, cellIndex: number): void {
+        if (!draw) return;
+        // release pointer capture for touch screens
+        const label = document.getElementById(`shapeCell-${index}-${cellIndex}-label`);
+        label?.releasePointerCapture(event.pointerId);
+    }
 </script>
 
 
 
 <div
     class="shape"
+    class:draw
     style="--_size: {neighborhoodSideLength};"
     role="radiogroup"
     aria-labelledby="shapeHeading-{index}">
@@ -31,13 +60,18 @@
                 class="visuallyHidden"
                 name="shapeCell-{index}-{i}"
                 bind:checked={shape[i]}
+                on:click={e => {if (draw) e.preventDefault();}}
                 on:change={() => dispatch("shapeChange", {
                     neighborhoodIndex: index,
                     cellIndex: i,
                 })} />
             <label
                 for="shapeCell-{index}-{i}"
-                class="label">
+                id="shapeCell-{index}-{i}-label"
+                class="label"
+                on:pointerenter={e => handleDraw(e, i)}
+                on:mousedown={e => handleDraw(e, i)}
+                on:pointerdown={e => handlePointerDown(e, i)}>
                 <span class="visuallyHidden">
                     {i % neighborhoodSideLength - neighborhoodMidpoint} x, {Math.floor(i / neighborhoodSideLength) - neighborhoodMidpoint} y cell.
                 </span>
@@ -59,19 +93,67 @@
                 class="visuallyHidden"
                 name="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}"
                 bind:checked={shape[i + neighborhoodCenterIndex + 1]}
-                on:change={() => dispatch("shapeChange", {
+                on:click={e => {if (draw) e.preventDefault();}}
+                on:change={e => dispatch("shapeChange", {
                     neighborhoodIndex: index,
                     cellIndex: i + neighborhoodCenterIndex + 1,
                 })} />
             <label
                 for="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}"
-                class="label">
+                id="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}-label"
+                class="label"
+                on:pointerenter={e => handleDraw(
+                    e,
+                    i + neighborhoodCenterIndex + 1
+                )}
+                on:mousedown={e => handleDraw(
+                    e,
+                    i + neighborhoodCenterIndex + 1
+                )}
+                on:pointerdown={e => handlePointerDown(
+                    e,
+                    i + neighborhoodCenterIndex + 1
+                )}>
                 <span class="visuallyHidden">
                     {(i + neighborhoodCenterIndex + 1) % neighborhoodSideLength - neighborhoodMidpoint} x, {Math.floor((i + neighborhoodCenterIndex + 1) / neighborhoodSideLength) - neighborhoodMidpoint} y cell.
                 </span>
             </label>
         </div>
     {/each}
+</div>
+
+<div
+    class="mode"
+    role="radiogroup"
+    aria-label="checkbox mode">
+    <div class="radio">
+        <input
+            type="radio"
+            id="click-{index}"
+            class="visuallyHidden"
+            name="click-{index}"
+            value={false}
+            bind:group={draw} />
+        <label
+            for="click-{index}"
+            class="title">
+            Click
+        </label>
+    </div>
+    <div class="radio">
+        <input
+            type="radio"
+            id="draw-{index}"
+            class="visuallyHidden"
+            name="draw-{index}"
+            value={true}
+            bind:group={draw} />
+        <label
+            for="draw-{index}"
+            class="title">
+            Draw
+        </label>
+    </div>
 </div>
 
 
@@ -108,10 +190,18 @@
             pointer-events: none;
         }
 
+        &.draw {
+            touch-action: none;
+        }
+
         .cell {
             width: 100%;
             border-right: $_border-thin;
             border-bottom: $_border-thin;
+
+            &.center {
+                background-color: var(--MNCA-clr-red);
+            }
 
             input:checked + label {
                 color: var(--MNCA-clr-bg);
@@ -125,6 +215,38 @@
             label {
                 display: block;
                 cursor: crosshair;
+            }
+        }
+    }
+
+    .mode {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(calc(8ch + 20px), 1fr));
+        
+        border: $_border-thick;
+        margin-top: 8px;
+
+        .radio {
+            &:first-child {
+                border-right: $_border-thin;
+                margin-right: calc(-0.5 * $_border-thin-width);
+            }
+
+            input:checked + label {
+                color: var(--MNCA-clr-bg);
+                background-color: var(--MNCA-clr-1000);
+            }
+
+            label {
+                display: block;
+
+                font-size: 1rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                text-align: center;
+                padding: 5px;
+
+                cursor: pointer;
             }
         }
     }

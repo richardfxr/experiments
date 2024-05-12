@@ -16,7 +16,7 @@
         width: 100%;
 
         .stroke {
-            stroke: var(--MNCA-clr-red);
+            stroke: var(--MNCA-clr-bg);
         }
     }
 </style>

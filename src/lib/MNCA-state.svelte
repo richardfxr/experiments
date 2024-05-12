@@ -39,7 +39,7 @@
             type="radio"
             id="disabled-{index}"
             class="visuallyHidden"
-            name="enabled-{index}"
+            name="disabled-{index}"
             value={false}
             bind:group={state}
             on:change={() => dispatch(
