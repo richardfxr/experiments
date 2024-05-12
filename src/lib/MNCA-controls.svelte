@@ -8,6 +8,7 @@
     export const neighborhoodSize = neighborhoodSideLength ** 2;
     export const neighborhoodMidpoint = Math.floor(neighborhoodSideLength / 2);
     export const neighborhoodCenterIndex = Math.floor(neighborhoodSize / 2);
+    export const neighborhoodLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 </script>
 
 
@@ -15,6 +16,7 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
     import { createEventDispatcher } from 'svelte';
+    import NeighborhoodPreview from '$lib/SVGs/MNCA-neighborhoodPreview.svelte';
     import State from "$lib/MNCA-state.svelte";
     import Shape from "$lib/MNCA-shape.svelte";
     import CloseIcon from "$lib/SVGs/MNCA-close.svelte";
@@ -30,7 +32,6 @@
 
     /* === CONSTANTS ========================== */
     const dispatch = createEventDispatcher();
-    const neighborhoodLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const neighborhoodDescs = [
         "Applies to the same color channel",
         "Applies to the same color channel",
@@ -90,6 +91,12 @@
                         on:click={() => selectedNeighborhood = i}>
                         <span class="visuallyHidden">Neighborhood </span>
                         <span class="letter">{neighborhoodLetters[i]}</span>
+                        <div class="neighborhoodPreviewWrapper">
+                            <NeighborhoodPreview
+                                neighborhoodIndex={i}
+                                neighborhoodShape={neighborhoodShapes[i]}
+                                enabled={neighborhoodStates[i]} />
+                        </div>
                     </button>
                 {/each}
             </div>
@@ -256,7 +263,7 @@
                     flex-flow: column nowrap;
                     align-items: center;
 
-                    padding: 10px 15px;
+                    padding: 10px 12px 15px 12px;
                     border-right: $_border-thin;
                     border-bottom: $_border-thin;
 
@@ -270,6 +277,11 @@
                         font-size: 3rem;
                         font-weight: 800;
                         line-height: 1em;
+                    }
+
+                    .neighborhoodPreviewWrapper {
+                        width: 45px;
+                        margin-top: 8px;
                     }
                 }
             }
