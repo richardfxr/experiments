@@ -2,10 +2,13 @@
     /* === IMPORTS ============================ */
     import type { SvelteComponent } from "svelte";
     import {
-        type Rule,
         totalNeighborhoods,
         neighborhoodSideLength,
         neighborhoodSize,
+        deafultNeighborhoodStates,
+        defaultNeighborhoodShapes,
+        defaultNeighborhoodRules,
+        defaultNeighborhoodOverrideRules
     } from "$lib/MNCA-controls.svelte";
     import Canvas from "$lib/MNCA-canvas.svelte";
     import Controls from "$lib/MNCA-controls.svelte";
@@ -25,238 +28,12 @@
     /* === VARIABLES ========================== */
     let fps = 0;
     // whether the neighborhood is enabled or not
-    let neighborhoodStates: boolean[] = Array(totalNeighborhoods).fill(true);
-    // Multiple Neighborhood Cellular Automaton neighborhoods shapes
-    // 224 element arrays (15 x 15)
-    // true = cell is part of neighborhood, false otherwise
-    let neighborhoodShapes: boolean[][] = [
-        // neighborhood A
-        [
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false, false,
-            false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false,
-            false,  true,  true,  true,  true, false, false, false, false, false,  true,  true,  true,  true, false,
-            false,  true,  true,  true, false, false, false, false, false, false, false,  true,  true,  true, false,
-             true,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true,  true,
-             true,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true,  true,
-             true,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true,  true,
-             true,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true,  true,
-             true,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true,  true,
-            false,  true,  true,  true, false, false, false, false, false, false, false,  true,  true,  true, false, 
-            false,  true,  true,  true,  true, false, false, false, false, false,  true,  true,  true,  true, false,
-            false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false,
-            false, false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false
-        ],
-        // neighborhood B
-        [
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false,  true,  true,  true, false, false, false, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false, false,  true,  true,  true,  true,  true,  true,  true, false, false, false, false,
-            false, false, false, false,  true,  true,  true, false,  true,  true,  true, false, false, false, false,
-            false, false, false, false,  true,  true,  true,  true,  true,  true,  true, false, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false, false, false, false,  true,  true,  true, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-        ],
-        // neighborhood C
-        [
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false,  true,  true,  true, false, false, false, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false, false, false,  true,  true, false,  true,  true, false, false, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false, false, false, false,  true,  true,  true, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-        ],
-        // neighborhood D
-        [
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false,
-            false, false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false, false,
-            false, false,  true,  true,  true, false, false, false, false, false,  true,  true,  true, false, false,
-            false,  true,  true,  true, false, false, false, false, false, false, false,  true,  true,  true, false,
-            false,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true, false,
-             true,  true, false, false, false, false, false, false, false, false, false, false, false,  true,  true,
-             true,  true, false, false, false, false, false, false, false, false, false, false, false,  true,  true, 
-             true,  true, false, false, false, false, false, false, false, false, false, false, false,  true,  true, 
-             true,  true, false, false, false, false, false, false, false, false, false, false, false,  true,  true,
-             true,  true, false, false, false, false, false, false, false, false, false, false, false,  true,  true,
-            false,  true,  true, false, false, false, false, false, false, false, false, false,  true,  true, false,
-            false,  true,  true,  true, false, false, false, false, false, false, false,  true,  true,  true, false,
-            false, false,  true,  true,  true, false, false, false, false, false,  true,  true,  true, false, false,
-            false, false, false,  true,  true,  true,  true,  true,  true,  true,  true,  true, false, false, false,
-            false, false, false, false, false,  true,  true,  true,  true,  true, false, false, false, false, false
-        ]
-    ];
-
-    // Multiple Neighborhood Cellular Automaton neighborhoods rules
-    // 224 element arrays (15 x 15)
-    // 0: cell will die             (currentState * 0 + 0)
-    // 1: cell will be born         (currentState * 0 + 1)
-    // 2: cell will stay the same   (currentState * 1 + 0)
-    let neighborhoodRules: Rule[][] = [
-        // neighborhood A
-        [
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood B
-        [
-            2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood C
-        [
-            2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood D
-        [
-            2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ]
-    ];
-    let neighborhoodOverrideRules: Rule[][] = [
-        // neighborhood A
-        [
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood B
-        [
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood C
-        [
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ],
-        // neighborhood D
-        [
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-        ]
-    ];
+    let neighborhoodStates = deafultNeighborhoodStates.map(e => e);
+    // neighborhood shapes
+    let neighborhoodShapes = defaultNeighborhoodShapes.map(e => e);
+    // neighborhood rules
+    let neighborhoodRules = defaultNeighborhoodRules.map(e => e);
+    let neighborhoodOverrideRules = defaultNeighborhoodOverrideRules.map(e => e);
 
     initializeNeighborhoodData();
 
@@ -417,6 +194,92 @@
 
         if (canvas) canvas.updateNeighborhoods();
     }
+
+    function handleClear(neighborhoodIndex: number): void {
+        for (let y = 0; y < neighborhoodSideLength; y++) {
+            for (let x = 0; x < neighborhoodSideLength; x++) {
+                const rowCellsBefore = y * neighborhoodSideLength * (totalNeighborhoods + 1);
+                const columnCellsBefore = x;
+
+                // clear neighborhood shape
+                const shapeIndex = (rowCellsBefore + columnCellsBefore) * 4;
+                neighborhoodData[shapeIndex + neighborhoodIndex] = FALSE;
+
+                // clear neighborhood rules
+                const ruleIndex = (rowCellsBefore + neighborhoodSideLength + neighborhoodSideLength * neighborhoodIndex + columnCellsBefore) * 4;
+                neighborhoodData[ruleIndex] = TRUE;
+                neighborhoodData[ruleIndex + 1] = FALSE;
+                neighborhoodData[ruleIndex + 2] = TRUE;
+                neighborhoodData[ruleIndex + 3] = FALSE;
+            }
+        }
+        
+        if (canvas) canvas.updateNeighborhoods();
+    }
+    
+    function handleReset(neighborhoodIndex: number): void {
+        const enabled = neighborhoodStates[neighborhoodIndex];
+
+        for (let y = 0; y < neighborhoodSideLength; y++) {
+            for (let x = 0; x < neighborhoodSideLength; x++) {
+                // get indices for cell
+                const cellIndex = y * neighborhoodSideLength + x;
+                const rowCellsBefore = y * neighborhoodSideLength * (totalNeighborhoods + 1);
+                const columnCellsBefore = x;
+
+                if (enabled) {
+                    // set neighborhood shape
+                    const shapeIndex = (rowCellsBefore + columnCellsBefore) * 4;
+                    neighborhoodData[shapeIndex + neighborhoodIndex] = neighborhoodShapes[neighborhoodIndex][cellIndex] ? TRUE : FALSE;
+                }
+
+                // set neighborhood rules
+                const rule = neighborhoodRules[neighborhoodIndex][cellIndex];
+                const overrideRule = neighborhoodOverrideRules[neighborhoodIndex][cellIndex];
+                const ruleIndex = (rowCellsBefore + neighborhoodSideLength + neighborhoodSideLength * neighborhoodIndex + columnCellsBefore) * 4;
+                switch (rule) {
+                    case 0:
+                        neighborhoodData[ruleIndex] = FALSE;
+                        neighborhoodData[ruleIndex + 1] = FALSE;
+                        break;
+                    case 1:
+                        neighborhoodData[ruleIndex] = FALSE;
+                        neighborhoodData[ruleIndex + 1] = TRUE;
+                        break;
+                    case 2:
+                        neighborhoodData[ruleIndex] = TRUE;
+                        neighborhoodData[ruleIndex + 1] = FALSE;
+                        break;
+                }
+                switch (overrideRule) {
+                    case 0:
+                        neighborhoodData[ruleIndex + 2] = FALSE;
+                        neighborhoodData[ruleIndex + 3] = FALSE;
+                        break;
+                    case 1:
+                        neighborhoodData[ruleIndex + 2] = FALSE;
+                        neighborhoodData[ruleIndex + 3] = TRUE;
+                        break;
+                    case 2:
+                        neighborhoodData[ruleIndex + 2] = TRUE;
+                        neighborhoodData[ruleIndex + 3] = FALSE;
+                        break;
+                }
+            }
+        }
+
+        if (!enabled) {
+            // set both rules to 2 (cell will stay the same)
+            // if neighborhood is disabled
+            const zeroRuleIndex = getDataIndexOf(neighborhoodIndex, 0, true);
+            neighborhoodData[zeroRuleIndex] = TRUE;
+            neighborhoodData[zeroRuleIndex + 1] = FALSE;
+            neighborhoodData[zeroRuleIndex + 2] = TRUE;
+            neighborhoodData[zeroRuleIndex + 3] = FALSE;
+        }
+
+        if (canvas) canvas.updateNeighborhoods();
+    }
 </script>
 
 
@@ -445,7 +308,10 @@
             e.detail.cellIndex,
             e.detail.isOverride
         )}
-        on:randomize={() => {if (canvas) canvas.randomizeCells()}} />
+        on:clear={e => handleClear(e.detail.neighborhoodIndex)}
+        on:reset={e => handleReset(e.detail.neighborhoodIndex)}
+        on:randomize={() => {if (canvas) canvas.randomizeCells()}}
+        on:randomizeMono={() => {if (canvas) canvas.randomizeCellsMono()}} />
     <Canvas
         bind:fps={fps}
         {neighborhoodData}

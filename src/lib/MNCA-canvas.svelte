@@ -40,6 +40,7 @@
     let pixelRatio = 1;
     let resizeObserver: ResizeObserver;
     let willRandomizeCells = false;
+    let randomizeMono = false;
 
     /* === FUNCTIONS ========================== */
     function render() {
@@ -60,7 +61,11 @@
 
         // update uniforms
         if (willRandomizeCells) {
-            bufferMaterial.uniforms.uTexture.value = generateRandomStartCondition();
+            if (randomizeMono) {
+                bufferMaterial.uniforms.uTexture.value = generateRandomMonochromeTexture();
+            } else {
+                bufferMaterial.uniforms.uTexture.value = generateRandomColorTexture();
+            }
             willRandomizeCells = false;
         } else {
             bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
@@ -95,6 +100,12 @@
 
     export function randomizeCells(): void {
         willRandomizeCells = true;
+        randomizeMono = false;
+    }
+
+    export function randomizeCellsMono(): void {
+        willRandomizeCells = true;
+        randomizeMono = true;
     }
 
     function handleResize(): void {
@@ -114,7 +125,7 @@
         return 255 * Math.floor(Math.random() * 2);
     }
 
-    function generateRandomMonochromeStartCondition(): THREE.DataTexture {
+    function generateRandomMonochromeTexture(): THREE.DataTexture {
         // create a buffer with color data
         const size = canvasWidth * canvasHeight;
         const data = new Uint8Array(4 * size);
@@ -142,7 +153,7 @@
         return texture;
     }
 
-    function generateRandomStartCondition(): THREE.DataTexture {
+    function generateRandomColorTexture(): THREE.DataTexture {
         // create a buffer with color data
         const size = canvasWidth * canvasHeight;
         const data = new Uint8Array(4 * size);
@@ -237,7 +248,7 @@
         });
         bufferMaterial = new THREE.ShaderMaterial({
             uniforms: {
-                uTexture: { value: generateRandomStartCondition() },
+                uTexture: { value: generateRandomColorTexture() },
                 uResolution: { value: resolution },
                 uNeighborhoods: { value: neighborhoodDataTexture },
                 uNeighborhoodResolution: { value: neighborhoodResolution }
