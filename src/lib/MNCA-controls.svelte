@@ -4,10 +4,10 @@
 
     /* === CONSTANTS ========================== */
     export const totalNeighborhoods = 4;
-    export const neighborhoodSize = 15; // width & height of each neighborhood, must be odd
-    export const neighborhoodCenter = Math.floor(neighborhoodSize / 2);
-    export const neighborhoodTotalCells = neighborhoodSize ** 2 - 1;
-    export const neighboorhoodMiddleIndex = neighborhoodTotalCells / 2;
+    export const neighborhoodSideLength = 15; // width & height of each neighborhood, must be odd
+    export const neighborhoodSize = neighborhoodSideLength ** 2;
+    export const neighborhoodMidpoint = Math.floor(neighborhoodSideLength / 2);
+    export const neighborhoodCenterIndex = Math.floor(neighborhoodSize / 2);
 </script>
 
 
@@ -31,7 +31,7 @@
     /* === CONSTANTS ========================== */
     const dispatch = createEventDispatcher();
     const neighborhoodLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const neighboorhoodDescs = [
+    const neighborhoodDescs = [
         "Applies to the same color channel",
         "Applies to the same color channel",
         "Applies to the previous color channel",
@@ -49,15 +49,6 @@
     function handleBackdropClick(e: MouseEvent): void {
         if (e.target !== dialog) return;
         dialog.close();
-    }
-
-    /* === HANDLERS =========================== */
-    function handleStateChange(index: number): void {
-        dispatch("stateChange", { index });
-    }
-
-    function handleShapeChange(index: number): void {
-        dispatch("shapeChange", { index });
     }
 </script>
 
@@ -114,11 +105,11 @@
                 aria-labelledby="tab-{i}">
                 <div class="general">
                     <h2>Neighborhood {neighborhoodLetters[i]}</h2>
-                    <p>{neighboorhoodDescs[i]}</p>
+                    <p>{neighborhoodDescs[i]}</p>
                     <State
                         bind:state={neighborhoodStates[i]}
                         index={i}
-                        on:change={() => handleStateChange(i)} />
+                        on:stateChange={e => dispatch("stateChange", e.detail)} />
                 </div>
 
                 <div class="shape">
@@ -144,7 +135,7 @@
                     <Shape
                         bind:shape={neighborhoodShapes[i]}
                         index={i}
-                        on:change={() => handleShapeChange(i)} />
+                        on:shapeChange={e => dispatch("shapeChange", e.detail)} />
                 </div>
             </div>
         {/each}

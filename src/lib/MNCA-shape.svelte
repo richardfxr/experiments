@@ -1,25 +1,29 @@
 <script lang="ts">
     /* === IMPORTS ============================ */
+    import { createEventDispatcher } from 'svelte';
     import {
-        neighborhoodSize,
-        neighborhoodCenter,
-        neighboorhoodMiddleIndex
+        neighborhoodSideLength,
+        neighborhoodMidpoint,
+        neighborhoodCenterIndex
     } from "$lib/MNCA-controls.svelte";
     import CurrentCellIcon from "$lib/SVGs/MNCA-currentCell.svelte";
 
     /* === PROPS ============================== */
     export let shape: boolean[]; // bind
     export let index: number;
+
+    /* === CONSTANTS ========================== */
+    const dispatch = createEventDispatcher();
 </script>
 
 
 
 <div
     class="shape"
-    style="--_size: {neighborhoodSize};"
+    style="--_size: {neighborhoodSideLength};"
     role="radiogroup"
     aria-labelledby="shapeHeading-{index}">
-    {#each shape.slice(0 , neighboorhoodMiddleIndex) as _, i}
+    {#each shape.slice(0 , neighborhoodCenterIndex) as _, i}
         <div class="cell">
             <input
                 type="checkbox"
@@ -27,12 +31,15 @@
                 class="visuallyHidden"
                 name="shapeCell-{index}-{i}"
                 bind:checked={shape[i]}
-                on:change />
+                on:change={() => dispatch("shapeChange", {
+                    neighborhoodIndex: index,
+                    cellIndex: i,
+                })} />
             <label
                 for="shapeCell-{index}-{i}"
                 class="label">
                 <span class="visuallyHidden">
-                    {i % neighborhoodSize - neighborhoodCenter} x, {Math.floor(i / neighborhoodSize) - neighborhoodCenter} y cell.
+                    {i % neighborhoodSideLength - neighborhoodMidpoint} x, {Math.floor(i / neighborhoodSideLength) - neighborhoodMidpoint} y cell.
                 </span>
             </label>
         </div>
@@ -44,20 +51,23 @@
         </div>
     </div>
 
-    {#each shape.slice(neighboorhoodMiddleIndex) as _, i}
+    {#each shape.slice(neighborhoodCenterIndex + 1) as _, i}
         <div class="cell">
             <input
                 type="checkbox"
-                id="shapeCell-{index}-{i + neighboorhoodMiddleIndex + 1}"
+                id="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}"
                 class="visuallyHidden"
-                name="shapeCell-{index}-{i + neighboorhoodMiddleIndex + 1}"
-                bind:checked={shape[i + neighboorhoodMiddleIndex]}
-                on:change />
+                name="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}"
+                bind:checked={shape[i + neighborhoodCenterIndex + 1]}
+                on:change={() => dispatch("shapeChange", {
+                    neighborhoodIndex: index,
+                    cellIndex: i + neighborhoodCenterIndex + 1,
+                })} />
             <label
-                for="shapeCell-{index}-{i + neighboorhoodMiddleIndex + 1}"
+                for="shapeCell-{index}-{i + neighborhoodCenterIndex + 1}"
                 class="label">
                 <span class="visuallyHidden">
-                    {(i + neighboorhoodMiddleIndex + 1) % neighborhoodSize - neighborhoodCenter} x, {Math.floor((i + neighboorhoodMiddleIndex + 1) / neighborhoodSize) - neighborhoodCenter} y cell.
+                    {(i + neighborhoodCenterIndex + 1) % neighborhoodSideLength - neighborhoodMidpoint} x, {Math.floor((i + neighborhoodCenterIndex + 1) / neighborhoodSideLength) - neighborhoodMidpoint} y cell.
                 </span>
             </label>
         </div>

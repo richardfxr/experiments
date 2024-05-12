@@ -1,75 +1,9 @@
 precision mediump float;
 uniform sampler2D uTexture; 
 uniform vec2 uResolution;
-uniform vec2 uNeighborhoodA[224];
-uniform int uNeighborhoodALength;
-uniform vec2 uNeighborhoodB[224];
-uniform int uNeighborhoodBLength;
-uniform vec2 uNeighborhoodC[224];
-uniform int uNeighborhoodCLength;
-uniform vec2 uNeighborhoodD[224];
-uniform int uNeighborhoodDLength;
+uniform sampler2D uNeighborhoods;
+uniform vec2 uNeighborhoodResolution;
 varying vec2 vUvs;
-
-vec3 GetNeighborsA(vec2 p) {
-    vec3 neighbors = vec3(0.0);
-
-    for(int i = 0; i < uNeighborhoodALength; i++) {
-        // scale offset to match texture coordinates
-        vec2 offset = uNeighborhoodA[i] / uResolution.xy;
-        // get state of neighboring cell
-        vec4 neighbor = texture2D(uTexture, p + offset); 
-        neighbors += vec3(
-            neighbor.r > 0.5 ? 1.0 : 0.0,
-            neighbor.g > 0.5 ? 1.0 : 0.0,
-            neighbor.b > 0.5 ? 1.0 : 0.0
-        );
-    }
-
-    return neighbors;
-}
-
-vec3 GetNeighborsB(vec2 p) {
-    vec3 neighbors = vec3(0.0);
-
-    for(int i = 0; i < uNeighborhoodBLength; i++) {
-        // scale offset to match texture coordinates
-        vec2 offset = uNeighborhoodB[i] / uResolution.xy;
-        // get state of neighboring cell
-        vec4 neighbor = texture2D(uTexture, p + offset); 
-        neighbors += neighbor.rgb;
-    }
-
-    return neighbors;
-}
-
-vec3 GetNeighborsC(vec2 p) {
-    vec3 neighbors = vec3(0.0);
-
-    for(int i = 0; i < uNeighborhoodCLength; i++) {
-        // scale offset to match texture coordinates
-        vec2 offset = uNeighborhoodC[i] / uResolution.xy;
-        // get state of neighboring cell
-        vec4 neighbor = texture2D(uTexture, p + offset); 
-        neighbors += neighbor.gbr;
-    }
-
-    return neighbors;
-}
-
-vec3 GetNeighborsD(vec2 p) {
-    vec3 neighbors = vec3(0.0);
-
-    for(int i = 0; i < uNeighborhoodDLength; i++) {
-        // scale offset to match texture coordinates
-        vec2 offset = uNeighborhoodD[i] / uResolution.xy;
-        // get state of neighboring cell
-        vec4 neighbor = texture2D(uTexture, p + offset); 
-        neighbors += neighbor.brg;
-    }
-
-    return neighbors;
-}
 
 float GetNewState(float neighborsA, float neighborsB, float neighborsC, float neighborsD) {
     float newState = -1.0;
@@ -94,14 +28,46 @@ void main() {
     // previous state of cell
     vec3 currentState = texture2D(uTexture, vUvs).rgb;
     // number of alive neighboring cells
-    vec3 neighborsA = GetNeighborsA(vUvs);
-    vec3 neighborsB = GetNeighborsB(vUvs);
-    vec3 neighborsC = GetNeighborsC(vUvs);
-    vec3 neighborsD = GetNeighborsD(vUvs);
+    vec3 neighborsA = vec3(0.0);
+    vec3 neighborsB = vec3(0.0);
+    vec3 neighborsC = vec3(0.0);
+    vec3 neighborsD = vec3(0.0);
 
-    float newStateR = GetNewState(neighborsA.r, neighborsB.r, neighborsC.r, neighborsD.r);
-    float newStateG = GetNewState(neighborsA.g, neighborsB.g, neighborsC.g, neighborsD.g);
-    float newStateB = GetNewState(neighborsA.b, neighborsB.b, neighborsC.b, neighborsD.b);
+    // get one pixel in each texture coordinate
+    vec2 pixel = vec2(1.0, 1.0) / uResolution.xy;
+    vec2 neighborhoodPixel = vec2(1.0, 1.0) / vec2(76.0, 16.0);
+
+    // loop through 15 x 15 area around cell
+    // starts at 1 because texture2D is 1-indexed
+    for(int y = 1; y < 16; y++) {
+        for (int x = 1; x < 16; x++) {
+            // neighborhood shape data:
+            // R: neighborhoodA
+            // G: neighborhoodB
+            // B: neighborhoodC
+            // A: neighborhoodD
+            // values:
+            // 1.0: cell in included in neighborhood
+            // 0.0: cell is not included in neighborhood
+            vec4 included = texture2D(
+                uNeighborhoods,
+                vec2(x, y) * neighborhoodPixel
+            );
+            // scale offset to match texture coordinates
+            vec2 offset = vec2(x - 8, y - 8) * pixel;
+            // get state of cell
+            vec3 cell = texture2D(uTexture, vUvs + offset).rgb; 
+            // update neighbors
+            neighborsA += included.r * cell;
+            neighborsB += included.g * cell;
+            neighborsC += included.b * cell;
+            neighborsD += included.a * cell;
+        }
+    }
+
+    float newStateR = GetNewState(neighborsA.r, neighborsB.r, neighborsC.g, neighborsD.b);
+    float newStateG = GetNewState(neighborsA.g, neighborsB.g, neighborsC.b, neighborsD.r);
+    float newStateB = GetNewState(neighborsA.b, neighborsB.b, neighborsC.r, neighborsD.g);
 
     gl_FragColor = vec4(
         newStateR == -1.0 ? currentState.r : newStateR,

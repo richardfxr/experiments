@@ -1,7 +1,13 @@
 <script lang="ts">
+    /* === IMPORTS ============================ */
+    import { createEventDispatcher } from 'svelte';
+
     /* === PROPS ============================== */
     export let state: boolean; // bind
     export let index: number;
+
+    /* === CONSTANTS ========================== */
+    const dispatch = createEventDispatcher();
 </script>
 
 
@@ -18,7 +24,10 @@
             name="enabled-{index}"
             value={true}
             bind:group={state}
-            on:change />
+            on:change={() => dispatch(
+                "stateChange",
+                { neighborhoodIndex: index }
+            )} />
         <label
             for="enabled-{index}"
             class="title">
@@ -33,7 +42,10 @@
             name="enabled-{index}"
             value={false}
             bind:group={state}
-            on:change />
+            on:change={() => dispatch(
+                "stateChange",
+                { neighborhoodIndex: index }
+            )} />
         <label
             for="disabled-{index}"
             class="title">

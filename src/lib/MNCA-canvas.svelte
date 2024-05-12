@@ -5,21 +5,20 @@
     import VertexShader from '$shaders/cellularAutomaton-vertex.glsl?raw';
     import FragmentShader from '$shaders/cellularAutomaton-fragment.glsl?raw';
     import BufferFragmentShader from '$shaders/mnca-bufferFragment.glsl?raw';
+  import { neighborhoodSideLength, totalNeighborhoods } from './MNCA-controls.svelte';
 
     /* === PROPS ============================== */
     export let fps: number; // bind
-    export let neighborhoodStates: boolean[];
-    export let neighborhoodA: THREE.Vector2[];
-    export let neighborhoodALength: number;
-    export let neighborhoodB: THREE.Vector2[];
-    export let neighborhoodBLength: number;
-    export let neighborhoodC: THREE.Vector2[];
-    export let neighborhoodCLength: number;
-    export let neighborhoodD: THREE.Vector2[];
-    export let neighborhoodDLength: number;
+    export let neighborhoodData: Uint8Array;
 
     /* === BINDINGS =========================== */
     let canvas: HTMLCanvasElement;
+
+    /* === CONSTANTS ========================== */
+    const neighborhoodResolution = new THREE.Vector2(
+        neighborhoodSideLength * (totalNeighborhoods + 1),
+        neighborhoodSideLength
+    );
 
     /* === VARIABLES ========================== */
     // THREE
@@ -60,18 +59,6 @@
 
         // update uniforms
         bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
-        bufferMaterial.uniforms.uNeighborhoodA.value = neighborhoodA;
-        bufferMaterial.uniforms.uNeighborhoodALength.value =
-            neighborhoodStates[0] ? neighborhoodALength : 0;
-        bufferMaterial.uniforms.uNeighborhoodB.value = neighborhoodB;
-        bufferMaterial.uniforms.uNeighborhoodBLength.value =
-            neighborhoodStates[1] ? neighborhoodBLength : 0;
-        bufferMaterial.uniforms.uNeighborhoodC.value = neighborhoodC;
-        bufferMaterial.uniforms.uNeighborhoodCLength.value =
-            neighborhoodStates[2] ? neighborhoodCLength : 0;
-        bufferMaterial.uniforms.uNeighborhoodD.value = neighborhoodD;
-        bufferMaterial.uniforms.uNeighborhoodDLength.value =
-            neighborhoodStates[3] ? neighborhoodDLength : 0;
 
         // log frame rate
         frames++;
@@ -84,6 +71,20 @@
         }
 
         window.requestAnimationFrame(render);
+    }
+
+    export function updateNeighborhoods(): void {
+        // create new neighborhood data texture
+        const neighborhoodDataTexture = new THREE.DataTexture(
+            neighborhoodData,
+            neighborhoodResolution.x,
+            neighborhoodResolution.y,
+            THREE.RGBAFormat
+        );
+        neighborhoodDataTexture.needsUpdate = true;
+
+        // update uniform
+        bufferMaterial.uniforms.uNeighborhoods.value = neighborhoodDataTexture;
     }
 
     function handleResize(): void {
@@ -207,6 +208,15 @@
             pixelRatio
         );
 
+        // neighborhood data texture
+        const neighborhoodDataTexture = new THREE.DataTexture(
+            neighborhoodData,
+            neighborhoodResolution.x,
+            neighborhoodResolution.y,
+            THREE.RGBAFormat
+        );
+        neighborhoodDataTexture.needsUpdate = true;
+
         // materials
         material = new THREE.ShaderMaterial({
             uniforms: {
@@ -220,14 +230,8 @@
             uniforms: {
                 uTexture: { value: generateRandomStartCondition() },
                 uResolution: { value: resolution },
-                uNeighborhoodA: { value: neighborhoodA },
-                uNeighborhoodALength: { value: neighborhoodStates[0] ? neighborhoodALength : 0 },
-                uNeighborhoodB: { value: neighborhoodB },
-                uNeighborhoodBLength: { value: neighborhoodStates[1] ? neighborhoodBLength : 0 },
-                uNeighborhoodC: { value: neighborhoodC },
-                uNeighborhoodCLength: { value: neighborhoodStates[2] ? neighborhoodCLength : 0 },
-                uNeighborhoodD: { value: neighborhoodD },
-                uNeighborhoodDLength: { value: neighborhoodStates[3] ? neighborhoodDLength : 0 }
+                uNeighborhoods: { value: neighborhoodDataTexture },
+                uNeighborhoodResolution: { value: neighborhoodResolution }
             },
             vertexShader: VertexShader,
             fragmentShader: BufferFragmentShader
