@@ -307,10 +307,11 @@
 </script>
 
 
-<!-- on:click={handleBackdropClick} -->
+
 <dialog
     class="controls"
-    bind:this={dialog}>
+    bind:this={dialog}
+    on:click={handleBackdropClick}>
     <form method="dialog">
         <div class="heading">
             <button
