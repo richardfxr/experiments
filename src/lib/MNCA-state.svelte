@@ -66,7 +66,7 @@
 
     .state {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(calc(8ch + 20px), 1fr));
         
         border: $_border-thick;
         margin-top: 8px;
@@ -89,7 +89,7 @@
                 font-weight: 700;
                 text-transform: uppercase;
                 text-align: center;
-                padding: 5px 10px;
+                padding: 5px;
 
                 cursor: pointer;
             }

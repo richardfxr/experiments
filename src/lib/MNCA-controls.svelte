@@ -533,6 +533,11 @@
     $_trans-fast: 0.2s ease-in-out;
 
     .controls {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
         max-width: 500px;
         min-height: 100%;
 
@@ -619,6 +624,7 @@
         .neighborhoods {
             margin-top: 24px;
             
+            
             h2 {
                 padding: 2px 10px;
                 border-bottom: $_border-thin;
@@ -626,7 +632,9 @@
 
             .tabs {
                 display: flex;
-                flex-flow: row wrap;
+                flex-flow: row nowrap;
+
+                overflow-x: auto;
 
                 button {
                     display: flex;
@@ -671,11 +679,12 @@
             .legend {
                 display: flex;
                 flex-flow: row wrap;
-                gap: 18px;
+                column-gap: 18px;
+                row-gap: 8px;
 
-                padding: 8px 0 8px 0;
+                padding: 10px 0 10px 0;
                 border-top: $_border-thin;
-                margin-top: 5px;
+                margin-top: 8px;
 
                 li {
                     display: flex;
@@ -719,8 +728,34 @@
         }
 
         .closeButton {
-            margin-top: 25px;
             border: $_border-thick;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+    }
+
+    /* === BREAKPOINTS ======================== */
+    @media (max-width: 750px) {
+        .controls {
+            max-width: 400px;
+        }
+    }
+
+    @media (max-width: 550px) {
+        .controls {
+            top: 100px;
+            max-width: unset;
+            min-height: unset;
+            max-height: calc(100% - 100px);
+
+            padding: 24px 8%;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 450px) {
+        .controls {
+            padding: 24px 6%;
         }
     }
 </style>
