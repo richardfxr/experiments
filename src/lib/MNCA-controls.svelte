@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     /* === TYPES ============================== */
-    export type Rule = "noChange" | "death" | "birth";
+    export type Rule = 0 | 1 | 2;
 
     /* === CONSTANTS ========================== */
     export const totalNeighborhoods = 4;
@@ -19,6 +19,7 @@
     import NeighborhoodPreview from '$lib/SVGs/MNCA-neighborhoodPreview.svelte';
     import State from "$lib/MNCA-state.svelte";
     import Shape from "$lib/MNCA-shape.svelte";
+    import Rules from '$lib/MNCA-rules.svelte';
     import CloseIcon from "$lib/SVGs/MNCA-close.svelte";
     import CurrentCellIcon from "$lib/SVGs/MNCA-currentCell.svelte";
 
@@ -26,6 +27,8 @@
     export let fps: number;
     export let neighborhoodStates: boolean[]; // bind
     export let neighborhoodShapes: boolean[][]; // bind
+    export let neighborhoodRules: Rule[][]; // bind
+    export let neighborhoodOverrideRules: Rule[][]; // bind
     
     /* === BINDINGS =========================== */
     let dialog: HTMLDialogElement;
@@ -144,10 +147,83 @@
                         index={i}
                         on:shapeChange={e => dispatch("shapeChange", e.detail)} />
                 </div>
+
+                <div class="rules">
+                    <h2>Rules</h2>
+                    <p>Number of neighbors for cell death and birth</p>
+                    <ul class="legend" aria-label="legend">
+                        <li>
+                            <div class="cellIcon">
+                                <span class="visuallyHidden">Uncolored button.</span>
+                            </div>
+                            no change
+                        </li>
+                        <li>
+                            <div
+                                class="cellIcon"
+                                style="background-color: var(--MNCA-clr-red);"
+                                >
+                                <span class="visuallyHidden">Red button.</span>
+                            </div>
+                            death
+                        </li>
+                        <li>
+                            <div
+                                class="cellIcon"
+                                style="background-color: var(--MNCA-clr-teal);"
+                                >
+                                <span class="visuallyHidden">Teal button.</span>
+                            </div>
+                            birth
+                        </li>
+                    </ul>
+                    <Rules
+                        bind:rules={neighborhoodRules[i]}
+                        size={neighborhoodShapes[i].filter(Boolean).length}
+                        index={i}
+                        on:ruleChange={e => dispatch("ruleChange", e.detail)} />
+                </div>
+
+                <div class="overrideRules">
+                    <h2>Override Rules</h2>
+                    <p>Applied after all other rules. Number of neighbors for cell death and birth</p>
+                    <ul class="legend" aria-label="legend">
+                        <li>
+                            <div class="cellIcon">
+                                <span class="visuallyHidden">Uncolored button.</span>
+                            </div>
+                            no change
+                        </li>
+                        <li>
+                            <div
+                                class="cellIcon"
+                                style="background-color: var(--MNCA-clr-red);"
+                                >
+                                <span class="visuallyHidden">Red button.</span>
+                            </div>
+                            death
+                        </li>
+                        <li>
+                            <div
+                                class="cellIcon"
+                                style="background-color: var(--MNCA-clr-teal);"
+                                >
+                                <span class="visuallyHidden">Teal button.</span>
+                            </div>
+                            birth
+                        </li>
+                    </ul>
+                    <Rules
+                        bind:rules={neighborhoodOverrideRules[i]}
+                        size={neighborhoodShapes[i].filter(Boolean).length}
+                        index={i}
+                        isOverride
+                        on:ruleChange={e => dispatch("ruleChange", e.detail)} />
+                </div>
             </div>
         {/each}
-        
-        <div class="placeholder"></div>
+
+        <button type="button" on:click={() => dispatch("randomize")}>Randomize cells</button>
     </form>
 </dialog>
 
@@ -163,7 +239,7 @@
 
     .controls {
         max-width: 500px;
-        max-height: 100%;
+        min-height: 100%;
 
         padding: 24px;
         border: none;
@@ -174,10 +250,6 @@
 
         &::backdrop {
             background-color: transparent;
-        }
-
-        .placeholder {
-            height: 200vh;
         }
 
         h1, h2 {
@@ -290,7 +362,7 @@
         .neighborhood {
             display: flex;
             flex-flow: column nowrap;
-            gap: 30px;
+            gap: 40px;
 
             margin-top: 30px;
 

@@ -39,6 +39,7 @@
     let canvasHeight = 0;
     let pixelRatio = 1;
     let resizeObserver: ResizeObserver;
+    let willRandomizeCells = false;
 
     /* === FUNCTIONS ========================== */
     function render() {
@@ -58,8 +59,13 @@
         renderBufferB = temp;
 
         // update uniforms
-        bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
-
+        if (willRandomizeCells) {
+            bufferMaterial.uniforms.uTexture.value = generateRandomStartCondition();
+            willRandomizeCells = false;
+        } else {
+            bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
+        }
+        
         // log frame rate
         frames++;
         const time = performance.now();
@@ -87,6 +93,10 @@
         bufferMaterial.uniforms.uNeighborhoods.value = neighborhoodDataTexture;
     }
 
+    export function randomizeCells(): void {
+        willRandomizeCells = true;
+    }
+
     function handleResize(): void {
         canvasWidth = canvas.clientWidth;
         canvasHeight = canvas.clientHeight;
@@ -104,34 +114,33 @@
         return 255 * Math.floor(Math.random() * 2);
     }
 
-    // mono crhome version of generateRandomStartCondition()
-    // function generateRandomStartCondition(): THREE.DataTexture {
-    //     // create a buffer with color data
-    //     const size = canvasWidth * canvasHeight;
-    //     const data = new Uint8Array(4 * size);
+    function generateRandomMonochromeStartCondition(): THREE.DataTexture {
+        // create a buffer with color data
+        const size = canvasWidth * canvasHeight;
+        const data = new Uint8Array(4 * size);
 
-    //     for (let i = 0; i < size; i++) {
-    //         const stride = i * 4;
+        for (let i = 0; i < size; i++) {
+            const stride = i * 4;
 
-    //         const color = getRandomColor();
+            const color = getRandomColor();
 
-    //         data[stride] = color;
-    //         data[stride + 1] = color;
-    //         data[stride + 2] = color;
-    //         data[stride + 3] = 255;
-    //     }
+            data[stride] = color;
+            data[stride + 1] = color;
+            data[stride + 2] = color;
+            data[stride + 3] = 255;
+        }
 
-    //     // used the buffer to create a DataTexture
-    //     const texture = new THREE.DataTexture(
-    //         data,
-    //         canvasWidth,
-    //         canvasHeight,
-    //         THREE.RGBAFormat
-    //     );
-    //     texture.needsUpdate = true;
+        // used the buffer to create a DataTexture
+        const texture = new THREE.DataTexture(
+            data,
+            canvasWidth,
+            canvasHeight,
+            THREE.RGBAFormat
+        );
+        texture.needsUpdate = true;
 
-    //     return texture;
-    // }
+        return texture;
+    }
 
     function generateRandomStartCondition(): THREE.DataTexture {
         // create a buffer with color data

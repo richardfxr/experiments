@@ -5,21 +5,52 @@ uniform sampler2D uNeighborhoods;
 uniform vec2 uNeighborhoodResolution;
 varying vec2 vUvs;
 
-float GetNewState(float neighborsA, float neighborsB, float neighborsC, float neighborsD) {
-    float newState = -1.0;
+vec2 GetPosition(float neighbors, float offset) {
+    return vec2(
+        mod(neighbors, 15.0) + 1.0 + 15.0 * offset,
+        floor(neighbors / 15.0) + 1.0
+    );
+}
 
-    if(neighborsA >= 20.0 && neighborsA <= 22.0) {newState = 1.0;}
-    if(neighborsA >= 37.0 &&  neighborsA <= 63.0) {newState = 0.0;}
-    if(neighborsA >= 81.0 &&  neighborsA <= 92.0) {newState = 0.0;}
-    if(neighborsB >= 5.0 && neighborsB <= 10.0) {newState = 0.0;}
-    if(neighborsB >= 16.0 && neighborsB <= 24.0) {newState = 1.0;}
-    if(neighborsC >= 3.0 && neighborsC <= 7.0) {newState = 0.0;}
-    // if(neighborsC >= 11.0 && neighborsC <= 12.0) {newState = 1.0;}
-    if(neighborsD == 5.0) {newState = 1.0;}
-    // if(neighborsD >= 24.0 && neighborsD <= 25.0) {newState = 1.0;}
-    // if(neighborsD >= 40.0 && neighborsD <= 42.0) {newState = 0.0;}
-    // if(neighborsD >= 45.0 && neighborsD <= 68.0) {newState = 1.0;}
-    if(neighborsA >= 16.0 &&  neighborsA <= 19.0) {newState = 0.0;}
+float GetNewState(
+    float currentState,
+    float neighborsA,
+    float neighborsB,
+    float neighborsC,
+    float neighborsD,
+    vec2 neighborhoodPixel
+) {
+    float newState = currentState;
+    vec2 positionA = GetPosition(neighborsA, 1.0);
+    vec2 positionB = GetPosition(neighborsB, 2.0);
+    vec2 positionC = GetPosition(neighborsC, 3.0);
+    vec2 positionD = GetPosition(neighborsD, 4.0);
+
+    vec4 rulesA= texture2D(
+        uNeighborhoods,
+        positionA * neighborhoodPixel
+    );
+    vec4 rulesB= texture2D(
+        uNeighborhoods,
+        positionB * neighborhoodPixel
+    );
+    vec4 rulesC= texture2D(
+        uNeighborhoods,
+        positionC * neighborhoodPixel
+    );
+    vec4 rulesD= texture2D(
+        uNeighborhoods,
+        positionD * neighborhoodPixel
+    );
+
+    newState = rulesA.r * newState + rulesA.g;
+    newState = rulesB.r * newState + rulesB.g;
+    newState = rulesC.r * newState + rulesC.g;
+    newState = rulesD.r * newState + rulesD.g;
+    newState = rulesA.b * newState + rulesA.a;
+    newState = rulesB.b * newState + rulesB.a;
+    newState = rulesC.b * newState + rulesC.a;
+    newState = rulesD.b * newState + rulesD.a;
 
     return newState;
 }
@@ -65,14 +96,14 @@ void main() {
         }
     }
 
-    float newStateR = GetNewState(neighborsA.r, neighborsB.r, neighborsC.g, neighborsD.b);
-    float newStateG = GetNewState(neighborsA.g, neighborsB.g, neighborsC.b, neighborsD.r);
-    float newStateB = GetNewState(neighborsA.b, neighborsB.b, neighborsC.r, neighborsD.g);
+    float newStateR = GetNewState(currentState.r, neighborsA.r, neighborsB.r, neighborsC.g, neighborsD.b, neighborhoodPixel);
+    float newStateG = GetNewState(currentState.g, neighborsA.g, neighborsB.g, neighborsC.b, neighborsD.r, neighborhoodPixel);
+    float newStateB = GetNewState(currentState.b, neighborsA.b, neighborsB.b, neighborsC.r, neighborsD.g, neighborhoodPixel);
 
     gl_FragColor = vec4(
-        newStateR == -1.0 ? currentState.r : newStateR,
-        newStateG == -1.0 ? currentState.g : newStateG,
-        newStateB == -1.0 ? currentState.b : newStateB,
+        newStateR,
+        newStateG,
+        newStateB,
         1.0
     );
 }

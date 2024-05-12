@@ -2,6 +2,7 @@
     /* === IMPORTS ============================ */
     import type { SvelteComponent } from "svelte";
     import {
+        type Rule,
         totalNeighborhoods,
         neighborhoodSideLength,
         neighborhoodSize,
@@ -103,6 +104,160 @@
         ]
     ];
 
+    // Multiple Neighborhood Cellular Automaton neighborhoods rules
+    // 224 element arrays (15 x 15)
+    // 0: cell will die             (currentState * 0 + 0)
+    // 1: cell will be born         (currentState * 0 + 1)
+    // 2: cell will stay the same   (currentState * 1 + 0)
+    let neighborhoodRules: Rule[][] = [
+        // neighborhood A
+        [
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood B
+        [
+            2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2,
+            2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood C
+        [
+            2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood D
+        [
+            2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ]
+    ];
+    let neighborhoodOverrideRules: Rule[][] = [
+        // neighborhood A
+        [
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood B
+        [
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood C
+        [
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ],
+        // neighborhood D
+        [
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+        ]
+    ];
+
     initializeNeighborhoodData();
 
     /* === FUNCTIONS ========================== */
@@ -114,19 +269,71 @@
                 const cellIndex = y * neighborhoodSideLength + x;
                 const rowCellsBefore = y * neighborhoodSideLength * (totalNeighborhoods + 1);
                 const columnCellsBefore = x;
-                const dataIndex = (rowCellsBefore + columnCellsBefore) * 4;
 
+                // set neighborhood shape
                 // TRUE: cell is part of neighborhood
                 // FALSE: cell is not part of neighborhood
-                neighborhoodData[dataIndex] = neighborhoodShapes[0][cellIndex] ? TRUE : FALSE;
-                neighborhoodData[dataIndex + 1] = neighborhoodShapes[1][cellIndex] ? TRUE : FALSE;
-                neighborhoodData[dataIndex + 2] = neighborhoodShapes[2][cellIndex] ? TRUE : FALSE;
-                neighborhoodData[dataIndex + 3] = neighborhoodShapes[3][cellIndex] ? TRUE : FALSE;
+                const shapeIndex = (rowCellsBefore + columnCellsBefore) * 4;
+                neighborhoodData[shapeIndex] = neighborhoodShapes[0][cellIndex] ? TRUE : FALSE;
+                neighborhoodData[shapeIndex + 1] = neighborhoodShapes[1][cellIndex] ? TRUE : FALSE;
+                neighborhoodData[shapeIndex + 2] = neighborhoodShapes[2][cellIndex] ? TRUE : FALSE;
+                neighborhoodData[shapeIndex + 3] = neighborhoodShapes[3][cellIndex] ? TRUE : FALSE;
+
+                for (let i = 0; i < totalNeighborhoods; i++) {
+                    // set neighborhood default rules
+                    // R: TRUE: cell states stays the same, FALSE: cell dies
+                    // G: TRUE: cell is born, FALSE: no effect
+                    // set neighborhood override rules
+                    // B: TRUE: cell states stays the same, FALSE: cell dies
+                    // A: TRUE: cell is born, FALSE: no effect
+                    const rule = neighborhoodRules[i][cellIndex];
+                    const overrideRule = neighborhoodOverrideRules[i][cellIndex];
+                    const ruleIndex = (rowCellsBefore + neighborhoodSideLength + neighborhoodSideLength * i + columnCellsBefore) * 4;
+                    switch (rule) {
+                        case 0:
+                            neighborhoodData[ruleIndex] = FALSE;
+                            neighborhoodData[ruleIndex + 1] = FALSE;
+                            break;
+                        case 1:
+                            neighborhoodData[ruleIndex] = FALSE;
+                            neighborhoodData[ruleIndex + 1] = TRUE;
+                            break;
+                        case 2:
+                            neighborhoodData[ruleIndex] = TRUE;
+                            neighborhoodData[ruleIndex + 1] = FALSE;
+                            break;
+                    }
+                    switch (overrideRule) {
+                        case 0:
+                            neighborhoodData[ruleIndex + 2] = FALSE;
+                            neighborhoodData[ruleIndex + 3] = FALSE;
+                            break;
+                        case 1:
+                            neighborhoodData[ruleIndex + 2] = FALSE;
+                            neighborhoodData[ruleIndex + 3] = TRUE;
+                            break;
+                        case 2:
+                            neighborhoodData[ruleIndex + 2] = TRUE;
+                            neighborhoodData[ruleIndex + 3] = FALSE;
+                            break;
+                    }
+                }
             }
         }
     }
 
+    /* returns the neighborhoodData index of for cell in neighborhood */
+    function getDataIndexOf(neighborhoodIndex: number, cellIndex: number, isRule = false): number {
+        const offset = isRule ? neighborhoodIndex + 1 : 0;
+        const rowCellsBefore = Math.floor(cellIndex / neighborhoodSideLength) * neighborhoodSideLength * (totalNeighborhoods + 1);
+        const columnCellsBefore = cellIndex % neighborhoodSideLength + offset * neighborhoodSideLength;
+        return (rowCellsBefore + columnCellsBefore) * 4;
+    }
+
     function handleStateChange(neighborhoodIndex: number): void {
+        const enabled = neighborhoodStates[neighborhoodIndex];
+
+        // toggle neighborhood shape
         for (let y = 0; y < neighborhoodSideLength; y++) {
             for (let x = 0; x < neighborhoodSideLength; x++) {
                 // get indices for cell
@@ -134,7 +341,7 @@
                 const columnCellsBefore = x;
                 const dataIndex = (rowCellsBefore + columnCellsBefore) * 4;
 
-                if (neighborhoodStates[neighborhoodIndex]) {
+                if (enabled) {
                     // set appropriate value based on neighborhood shape
                     const cellIndex = y * neighborhoodSideLength + x;
                     neighborhoodData[dataIndex + neighborhoodIndex] =
@@ -146,22 +353,68 @@
             }
         }
 
-        if (canvas) canvas.updateNeighborhoods();
-    }
+        // toggle neighborhood rules for 0 cells
+        if (enabled) {
+            // set rule to its actual value
+            handleRuleChange(neighborhoodIndex, 0, false);
+            handleRuleChange(neighborhoodIndex, 0, true);
+        } else {
+            // set both rules to 2 (cell will stay the same)
+            const zeroRuleIndex = getDataIndexOf(neighborhoodIndex, 0, true);
+            neighborhoodData[zeroRuleIndex] = TRUE;
+            neighborhoodData[zeroRuleIndex + 1] = FALSE;
+            neighborhoodData[zeroRuleIndex + 2] = TRUE;
+            neighborhoodData[zeroRuleIndex + 3] = FALSE;
+        }
 
-    /* returns the neighborhoodData index of for cell in neighborhood */
-    function getDataIndexOf(neighborhoodIndex: number, cellIndex: number, isRule = false): number {
-        const offset = isRule ? neighborhoodIndex + 1 : 0;
-        const rowCellsBefore = Math.floor(cellIndex / neighborhoodSideLength) * neighborhoodSideLength * (totalNeighborhoods + 1);
-        const columnCellsBefore = cellIndex % neighborhoodSideLength + offset * neighborhoodSideLength;
-        return (rowCellsBefore + columnCellsBefore) * 4;
+        if (canvas) canvas.updateNeighborhoods();
     }
 
     function handleShapeChange(neighborhoodIndex: number, cellIndex: number): void {
         if (!neighborhoodStates[neighborhoodIndex]) return;
         const dataIndex = getDataIndexOf(neighborhoodIndex, cellIndex);
-        // update green channel (shape of neighborhood) for corresponding cell
         neighborhoodData[dataIndex + neighborhoodIndex] = neighborhoodShapes[neighborhoodIndex][cellIndex] ? TRUE : FALSE;
+
+        if (canvas) canvas.updateNeighborhoods();
+    }
+
+    function handleRuleChange(neighborhoodIndex: number, cellIndex: number, isOverride: boolean): void {
+        if (!neighborhoodStates[neighborhoodIndex]) return;
+        const dataIndex = getDataIndexOf(neighborhoodIndex, cellIndex, true);
+        if (isOverride) {
+            const overrideRule = neighborhoodOverrideRules[neighborhoodIndex][cellIndex];
+            switch (overrideRule) {
+                case 0:
+                    neighborhoodData[dataIndex + 2] = FALSE;
+                    neighborhoodData[dataIndex + 3] = FALSE;
+                    break;
+                case 1:
+                    neighborhoodData[dataIndex + 2] = FALSE;
+                    neighborhoodData[dataIndex + 3] = TRUE;
+                    break;
+                case 2:
+                    neighborhoodData[dataIndex + 2] = TRUE;
+                    neighborhoodData[dataIndex + 3] = FALSE;
+                    break;
+            }
+        } else {
+            const rule = neighborhoodRules[neighborhoodIndex][cellIndex];
+            switch (rule) {
+                case 0:
+                    neighborhoodData[dataIndex] = FALSE;
+                    neighborhoodData[dataIndex + 1] = FALSE;
+                    break;
+                case 1:
+                    neighborhoodData[dataIndex] = FALSE;
+                    neighborhoodData[dataIndex + 1] = TRUE;
+                    break;
+                case 2:
+                    neighborhoodData[dataIndex] = TRUE;
+                    neighborhoodData[dataIndex + 1] = FALSE;
+                    break;
+            }
+        }
+
         if (canvas) canvas.updateNeighborhoods();
     }
 </script>
@@ -179,12 +432,20 @@
         {fps}
         bind:neighborhoodStates={neighborhoodStates}
         bind:neighborhoodShapes={neighborhoodShapes}
+        bind:neighborhoodRules={neighborhoodRules}
+        bind:neighborhoodOverrideRules={neighborhoodOverrideRules}
         bind:this={controls}
         on:stateChange={e => handleStateChange(e.detail.neighborhoodIndex)}
         on:shapeChange={e => handleShapeChange(
             e.detail.neighborhoodIndex,
             e.detail.cellIndex
-        )} />
+        )}
+        on:ruleChange={e => handleRuleChange(
+            e.detail.neighborhoodIndex,
+            e.detail.cellIndex,
+            e.detail.isOverride
+        )}
+        on:randomize={() => {if (canvas) canvas.randomizeCells()}} />
     <Canvas
         bind:fps={fps}
         {neighborhoodData}
@@ -197,8 +458,9 @@
     :root {
         // variables
         --MNCA-clr-1000: #FFFFFF;
-        --MNCA-clr-600: #a5a5a5;
+        --MNCA-clr-600: #b3b3b3;
         --MNCA-clr-red: #FF7557;
+        --MNCA-clr-teal: #00BDA1;
         --MNCA-clr-bg: #000000;
 
         color-scheme: dark;
