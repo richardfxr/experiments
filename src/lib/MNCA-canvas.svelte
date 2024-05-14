@@ -5,13 +5,14 @@
     import VertexShader from '$shaders/cellularAutomaton-vertex.glsl?raw';
     import FragmentShader from '$shaders/cellularAutomaton-fragment.glsl?raw';
     import BufferFragmentShader from '$shaders/mnca-bufferFragment.glsl?raw';
-  import { neighborhoodSideLength, totalNeighborhoods } from './MNCA-controls.svelte';
+    import { neighborhoodSideLength, totalNeighborhoods } from '$lib/MNCA-controls.svelte';
 
     /* === PROPS ============================== */
     export let fps: number; // bind
     export let neighborhoodData: Uint8Array;
 
     /* === BINDINGS =========================== */
+    let container: HTMLDivElement;
     let canvas: HTMLCanvasElement;
 
     /* === CONSTANTS ========================== */
@@ -34,6 +35,7 @@
     let camera: THREE.OrthographicCamera;
     let frames = 0;
     let prevTime = 0;
+    let hasResized = false;
     // others
     let canvasWidth = 0;
     let canvasHeight = 0;
@@ -48,9 +50,23 @@
         renderer.setRenderTarget(renderBufferA);
         renderer.render(bufferScene, camera);
 
-        // render scene
+        let textureToRender = renderBufferA.texture;
+
+        // update mesh texture
+        if (hasResized && randomizeMono) {
+            //@ts-ignore
+            textureToRender = generateRandomMonochromeTexture();
+            hasResized = false;
+        } else if (hasResized) {
+            //@ts-ignore
+            textureToRender = generateRandomColorTexture();
+            hasResized = false;
+        }
+
         //@ts-ignore
-        mesh.material.uniforms.uTexture.value = renderBufferA.texture;
+        mesh.material.uniforms.uTexture.value = textureToRender;
+
+        // render scene
         renderer.setRenderTarget(null);
         renderer.render(scene, camera);
 
@@ -68,7 +84,7 @@
             }
             willRandomizeCells = false;
         } else {
-            bufferMaterial.uniforms.uTexture.value = renderBufferB.texture;
+            bufferMaterial.uniforms.uTexture.value = textureToRender;
         }
         
         // log frame rate
@@ -109,15 +125,30 @@
     }
 
     function handleResize(): void {
-        canvasWidth = canvas.clientWidth;
-        canvasHeight = canvas.clientHeight;
+        // get container size & pixel ratio
+        canvasWidth = container.clientWidth;
+        canvasHeight = container.clientHeight;
         pixelRatio = window.devicePixelRatio;
 
+        // update renderer
         renderer.setSize(canvasWidth, canvasHeight);
         renderer.setPixelRatio(Math.min(pixelRatio, 3));
 
-        material.uniforms.uResolution.value.x = canvasWidth;
-        material.uniforms.uResolution.value.y = canvasHeight;
+        // update resolution uniforms
+        material.uniforms.uResolution.value.set(
+            canvasWidth,
+            canvasHeight
+        );
+        bufferMaterial.uniforms.uResolution.value.set(
+            canvasWidth,
+            canvasHeight
+        );
+
+        // update render contexts
+        renderBufferA.setSize(canvasWidth, canvasHeight);
+        renderBufferB.setSize(canvasWidth, canvasHeight);
+
+        hasResized = true;
     }
 
     // returns either 0 or 255
@@ -182,12 +213,12 @@
     /* === LIFECYCLE ========================== */
     onMount(() => {
         // initialize canvas size
-        canvasWidth = canvas.clientWidth;
-        canvasHeight = canvas.clientHeight;
-        
+        canvasWidth = container.clientWidth;
+        canvasHeight = container.clientHeight;
+
         // === RESIZE OBSERVER ===================
         resizeObserver = new ResizeObserver(handleResize);
-        resizeObserver.observe(canvas, {box: 'content-box'});
+        resizeObserver.observe(container, {box: 'content-box'});
 
         // === THREE SETUP =======================
         // scenes
@@ -268,6 +299,7 @@
             antialias: true,
             canvas
         });
+
         // camera
         camera = new THREE.OrthographicCamera(
             - 1, // left
@@ -278,6 +310,7 @@
             1, // far
         );
 
+        handleResize();
         prevTime = performance.now();
 
         // render
@@ -287,11 +320,18 @@
 
 
 
-<canvas bind:this={canvas}></canvas>
+<div class="container" bind:this={container}>
+    <canvas bind:this={canvas}></canvas>
+</div>
 
 
 
 <style lang="scss">
+    .container {
+        width: 100%;
+        height: 100%;
+    }
+
     canvas {
         display: block;
         width: 100%;
