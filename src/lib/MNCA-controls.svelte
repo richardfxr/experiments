@@ -556,6 +556,24 @@
             text-transform: uppercase;
         }
 
+        button {
+            color: var(--MNCA-clr-1000);
+
+            &:hover, &:focus {
+                background-color: var(--MNCA-clr-100);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--MNCA-clr-1000);
+                outline-offset: -5px;
+            }
+
+            &:active {
+                color: var(--MNCA-clr-bg);
+                background-color: var(--MNCA-clr-1000);
+            }
+        }
+
         .heading {
             display: flex;
             flex-flow: column nowrap;
@@ -643,9 +661,15 @@
                     border-right: $_border-thin;
                     border-bottom: $_border-thin;
 
+                    outline-offset: -5px;
+
                     &.selected {
                         color: var(--MNCA-clr-bg);
                         background-color: var(--MNCA-clr-1000);
+
+                        &:focus-visible {
+                            outline-color: var(--MNCA-clr-bg);
+                        }
                     }
 
                     .letter {
@@ -712,11 +736,6 @@
             padding: 5px 10px;
             border-right: $_border-thin;
             border-bottom: $_border-thin;
-
-            &:active {
-                background-color: var(--MNCA-clr-1000);
-                color: var(--MNCA-clr-bg);
-            }
         }
 
         .cellControls {

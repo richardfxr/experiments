@@ -21,7 +21,7 @@
             type="radio"
             id="enabled-{index}"
             class="visuallyHidden"
-            name="enabled-{index}"
+            name="neighborhood{index}-state"
             value={true}
             bind:group={state}
             on:change={() => dispatch(
@@ -39,7 +39,7 @@
             type="radio"
             id="disabled-{index}"
             class="visuallyHidden"
-            name="disabled-{index}"
+            name="neighborhood{index}-state"
             value={false}
             bind:group={state}
             on:change={() => dispatch(
@@ -77,9 +77,20 @@
                 margin-right: calc(-0.5 * $_border-thin-width);
             }
 
-            input:checked + label {
-                color: var(--MNCA-clr-bg);
-                background-color: var(--MNCA-clr-1000);
+            input {
+                &:focus-visible + label {
+                    outline: 2px solid var(--MNCA-clr-1000);
+                    outline-offset: -5px;
+                }
+
+                &:checked + label {
+                    color: var(--MNCA-clr-bg);
+                    background-color: var(--MNCA-clr-1000);
+                }
+
+                &:checked:focus-visible + label {
+                    outline-color: var(--MNCA-clr-bg);
+                }
             }
 
             label {
@@ -92,6 +103,10 @@
                 padding: 5px;
 
                 cursor: pointer;
+
+                &:hover, &:focus {
+                    background-color: var(--MNCA-clr-100);
+                }
             }
         }
     }

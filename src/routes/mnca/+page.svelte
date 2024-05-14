@@ -288,8 +288,7 @@
     <button
         class="rule"
         on:click={controls.showModal}>
-        <RuleIcon />
-        Rules
+        <RuleIcon />Rules
     </button>
     <Controls
         {fps}
@@ -324,9 +323,13 @@
     :root {
         // variables
         --MNCA-clr-1000: #FFFFFF;
+        --MNCA-clr-900: #eeeeee;
         --MNCA-clr-600: #b3b3b3;
+        --MNCA-clr-100: #252525;
         --MNCA-clr-red: #FF7557;
+        --MNCA-clr-red-hover: #ff8a70;
         --MNCA-clr-teal: #00BDA1;
+        --MNCA-clr-teal-hover: #17d4b8;
         --MNCA-clr-bg: #000000;
 
         color-scheme: dark;
@@ -357,7 +360,7 @@
         display: flex;
         flex-flow: row nowrap;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         position: fixed;
         right: 8px;
         bottom: 8px;
@@ -368,5 +371,18 @@
         text-transform: uppercase;
         padding: 8px 13px;
         background-color: var(--MNCA-clr-bg);
+
+        &:hover, &:focus {
+            background-color: var(--MNCA-clr-100);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--MNCA-clr-1000);
+        }
+
+        &:active {
+            color: var(--MNCA-clr-bg);
+            background-color: var(--MNCA-clr-1000);
+        }
     }
 </style>

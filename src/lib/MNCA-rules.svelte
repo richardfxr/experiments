@@ -88,6 +88,8 @@
         li {
             button {
                 width: 100%;
+
+                color: var(--MNCA-clr-1000);
                 padding: 4px 0;
                 border-right: $_border-thin;
                 border-bottom: $_border-thin;
@@ -96,14 +98,39 @@
                 -moz-user-select: none;
                 user-select: none;
 
+                &:hover, &:focus {
+                    background-color: var(--MNCA-clr-100);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--MNCA-clr-1000);
+                    outline-offset: -5px;
+                }
+
                 &.rule0 {
                     background-color: var(--MNCA-clr-red);
                     color: var(--MNCA-clr-bg);
+
+                    &:hover, &:focus {
+                        background-color: var(--MNCA-clr-red-hover);
+                    }
+
+                    &:focus-visible {
+                        outline-color: var(--MNCA-clr-bg);
+                    }
                 }
 
                 &.rule1 {
                     background-color: var(--MNCA-clr-teal);
                     color: var(--MNCA-clr-bg);
+
+                    &:hover, &:focus {
+                        background-color: var(--MNCA-clr-teal-hover);
+                    }
+
+                    &:focus-visible {
+                        outline-color: var(--MNCA-clr-bg);
+                    }
                 }
             }
         }

@@ -131,7 +131,7 @@
             type="radio"
             id="click-{index}"
             class="visuallyHidden"
-            name="click-{index}"
+            name="neighborhood{index}-mode"
             value={false}
             bind:group={draw} />
         <label
@@ -145,7 +145,7 @@
             type="radio"
             id="draw-{index}"
             class="visuallyHidden"
-            name="draw-{index}"
+            name="neighborhood{index}-mode"
             value={true}
             bind:group={draw} />
         <label
@@ -201,15 +201,38 @@
 
             &.center {
                 background-color: var(--MNCA-clr-red);
+
+                .label:hover, .label:focus {
+                    background-color: var(--MNCA-clr-red);
+                }
             }
 
-            input:checked + label {
-                color: var(--MNCA-clr-bg);
-                background-color: var(--MNCA-clr-1000);
+            input {
+                &:focus-visible + label {
+                    outline: 2px solid var(--MNCA-clr-1000);
+                    outline-offset: -4px;
+                }
+
+                &:checked + label {
+                    color: var(--MNCA-clr-bg);
+                    background-color: var(--MNCA-clr-1000);
+
+                    &:hover, &:focus {
+                        background-color: var(--MNCA-clr-900);
+                    }
+                }
+
+                &:checked:focus-visible + label {
+                    outline-color: var(--MNCA-clr-bg);
+                }
             }
 
             .label {
                 aspect-ratio: 1 / 1;
+
+                &:hover, &:focus {
+                    background-color: var(--MNCA-clr-100);
+                }
             }
 
             label {
@@ -232,9 +255,20 @@
                 margin-right: calc(-0.5 * $_border-thin-width);
             }
 
-            input:checked + label {
-                color: var(--MNCA-clr-bg);
-                background-color: var(--MNCA-clr-1000);
+            input {
+                &:focus-visible + label {
+                    outline: 2px solid var(--MNCA-clr-1000);
+                    outline-offset: -5px;
+                }
+
+                &:checked + label {
+                    color: var(--MNCA-clr-bg);
+                    background-color: var(--MNCA-clr-1000);
+                }
+
+                &:checked:focus-visible + label {
+                    outline-color: var(--MNCA-clr-bg);
+                }
             }
 
             label {
@@ -247,6 +281,10 @@
                 padding: 5px;
 
                 cursor: pointer;
+
+                &:hover, &:focus {
+                    background-color: var(--MNCA-clr-100);
+                }
             }
         }
     }
