@@ -284,6 +284,22 @@
 
 
 
+<svelte:head>
+    <title>Multiple Neighborhood Cellular Automaton</title>
+    <meta
+        name="description"
+        content="A customizable Multiple Neighborhood Cellular Automaton simulated using a GLSL fragment shader."
+    />
+    <link rel="icon" href="MNCA-favicon.png" />
+    <meta name="theme-color" content="#000000" />
+    <!-- open graph image -->
+    <meta property="og:image" content="/MNCA-og-image-1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Organic, slime-mold-like forms in green, red, and blue." />
+</svelte:head>
+
 <main>
     <button
         class="rule"

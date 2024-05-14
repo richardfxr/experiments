@@ -81,6 +81,18 @@
         <li>
             <a
                 data-sveltekit-reload
+                href="/mnca">
+                <h2>Cellular Automaton</h2>
+                <p>A customizable Multiple Neighborhood Cellular Automaton simulated in a fragment shader.</p>
+                <Image
+                    src="/images/index/MNCA-thumbnail"
+                    alt="Organic, slime-mold-like forms in green, red, and blue." />
+            </a>
+        </li>
+
+        <li>
+            <a
+                data-sveltekit-reload
                 href="/face-draw">
                 <h2>Face Draw</h2>
                 <p>An interactive canvas that is painted using face tracking.</p>
